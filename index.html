@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Studio Code Pro Clone</title>
+
+<style>
+/* CSS RESET & VARIABLES */
+:root {
+  --vscode-titleBar-bg: #181818;
+  --vscode-titleBar-fg: #cccccc;
+  --vscode-activityBar-bg: #181818;
+  --vscode-activityBar-fg: #858585;
+  --vscode-activityBar-active: #ffffff;
+  --vscode-activityBar-border: #3794ff;
+  --vscode-sideBar-bg: #252526;
+  --vscode-editor-bg: #1f1f1f;
+  --vscode-editor-fg: #cccccc;
+  --vscode-tab-bg: #1f1f1f;
+  --vscode-tab-inactive-bg: #181818;
+  --vscode-statusBar-bg: #181818;
+  --vscode-statusBar-fg: #cccccc;
+  --vscode-link: #3794ff;
+  --vscode-search-bg: #2b2b2b;
+  --vscode-search-border: #3c3c3c;
+  --vscode-box-bg: #252526;
+  --vscode-icon-blue: #007acc;
+  --vscode-list-hover: #2a2d2e;
+  --vscode-list-active: #04395e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--vscode-editor-bg);
+  color: var(--vscode-editor-fg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* TOP BAR */
+.top-bar {
+  height: 35px;
+  background: var(--vscode-titleBar-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--vscode-titleBar-fg);
+  user-select: none;
+}
+
+.top-bar-left { display: flex; align-items: center; padding-left: 10px; }
+.app-icon { width: 16px; height: 16px; fill: var(--vscode-icon-blue); margin-right: 15px; }
+.menu-items { display: flex; gap: 12px; }
+.menu-item { cursor: pointer; }
+.menu-item:hover { color: white; }
+.top-bar-center { flex: 1; display: flex; justify-content: center; }
+.search-box {
+  background: var(--vscode-search-bg); border: 1px solid var(--vscode-search-border); border-radius: 4px;
+  display: flex; align-items: center; padding: 0 100px 0 10px; height: 24px; color: #aaa; cursor: text; width: 400px; justify-content: center;
+}
+.search-box svg { width: 14px; height: 14px; fill: #aaa; margin-right: 8px; }
+.top-bar-right { display: flex; align-items: center; }
+.window-control { width: 46px; height: 35px; display: flex; justify-content: center; align-items: center; cursor: pointer; fill: var(--vscode-titleBar-fg); }
+.window-control:hover { background: rgba(255, 255, 255, 0.1); }
+.window-control.close:hover { background: #e81123; fill: white; }
+.window-control svg { width: 14px; height: 14px; }
+
+/* MAIN LAYOUT */
+.main { flex: 1; display: flex; height: calc(100vh - 35px - 22px); }
+
+/* ACTIVITY BAR */
+.activity-bar {
+  width: 48px; background: var(--vscode-activityBar-bg); display: flex; flex-direction: column;
+  justify-content: space-between; align-items: center; padding: 10px 0; z-index: 2; flex-shrink: 0;
+}
+.activity-icons { display: flex; flex-direction: column; width: 100%; }
+.icon { width: 100%; height: 48px; display: flex; justify-content: center; align-items: center; cursor: pointer; fill: var(--vscode-activityBar-fg); position: relative; }
+.icon svg { width: 24px; height: 24px; }
+.icon:hover { fill: var(--vscode-activityBar-active); }
+.icon.active { fill: var(--vscode-activityBar-active); }
+.icon.active::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--vscode-activityBar-border); }
+
+/* SIDEBAR */
+.sidebar { width: 250px; background: var(--vscode-sideBar-bg); display: flex; flex-direction: column; font-size: 13px; overflow: hidden; flex-shrink: 0; }
+.sidebar.hidden { display: none; }
+.sidebar-header { padding: 10px 20px; text-transform: uppercase; font-size: 11px; color: #cccccc; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+.sidebar-content { flex: 1; overflow-y: auto; }
+
+/* SIDEBAR VIEWS */
+.sidebar-view { display: none; }
+.sidebar-view.active { display: block; }
+.sidebar-padding { padding: 10px 20px; }
+.mt-5 { margin-top: 5px; }
+.mt-10 { margin-top: 10px; }
+
+/* INPUTS & BUTTONS */
+.vscode-input {
+  width: 100%; background: var(--vscode-search-bg); border: 1px solid var(--vscode-search-border);
+  color: var(--vscode-editor-fg); padding: 4px 6px; font-family: inherit; font-size: 13px; border-radius: 2px; outline: none;
+}
+.vscode-input:focus { border-color: var(--vscode-link); }
+textarea.vscode-input { resize: vertical; min-height: 60px; }
+.vscode-button {
+  width: 100%; background: var(--vscode-link); color: white; border: none; padding: 4px 0;
+  cursor: pointer; border-radius: 2px; font-size: 12px; margin-top: 5px; display: flex; justify-content: center; align-items: center;
+}
+.vscode-button:hover { background: #006bb3; }
+
+/* FOLDERS AND FILES */
+details { user-select: none; }
+summary { list-style: none; display: flex; align-items: center; padding: 4px 10px; cursor: pointer; color: #cccccc; }
+summary::-webkit-details-marker { display: none; }
+summary:hover { background: var(--vscode-list-hover); }
+summary svg { width: 16px; height: 16px; fill: #cccccc; margin-right: 6px; transition: transform 0.1s ease; }
+details[open] > summary > .folder-icon { transform: rotate(90deg); }
+.folder-content { padding-left: 14px; }
+.file-item { display: flex; align-items: center; padding: 4px 10px 4px 20px; cursor: pointer; color: #cccccc; }
+.file-item:hover { background: var(--vscode-list-hover); }
+.file-item.active { background: var(--vscode-list-active); color: #ffffff; }
+.file-icon { width: 16px; height: 16px; margin-right: 6px; }
+
+/* SCM MODULE */
+.scm-header { font-size: 11px; text-transform: uppercase; margin-bottom: 5px; font-weight: 600; color: #cccccc;}
+.scm-badge { margin-left: auto; color: #cca700; font-weight: bold; font-size: 12px; }
+
+/* EXTENSIONS MODULE */
+.extension-item { display: flex; padding: 10px 0; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ext-icon { width: 40px; height: 40px; margin-right: 10px; flex-shrink: 0; display:flex; justify-content:center; align-items:center; }
+.ext-details { flex: 1; min-width: 0; }
+.ext-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; color: #e7e7e7; }
+.ext-author { font-size: 12px; color: #858585; margin-top: 2px; }
+
+/* RESIZE HANDLE */
+.resize-handle { width: 4px; background: var(--vscode-titleBar-bg); cursor: ew-resize; transition: background 0.2s; z-index: 10; flex-shrink: 0; }
+.resize-handle:hover, .resize-handle.active { background: var(--vscode-link); }
+
+/* EDITOR AREA */
+.editor-area { flex: 1; display: flex; flex-direction: column; background: var(--vscode-editor-bg); min-width: 0; }
+
+/* TABS */
+.tabs { display: flex; background: var(--vscode-tab-inactive-bg); height: 35px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { display: flex; align-items: center; padding: 0 10px 0 15px; cursor: pointer; font-size: 13px; color: #858585; border-right: 1px solid var(--vscode-titleBar-bg); min-width: 120px; white-space: nowrap; }
+.tab.active { background: var(--vscode-tab-bg); color: #fff; }
+.tab-icon { width: 16px; height: 16px; fill: var(--vscode-icon-blue); margin-right: 6px; }
+.tab-close { width: 16px; height: 16px; fill: #858585; margin-left: auto; display: flex; justify-content: center; align-items: center; border-radius: 3px; }
+.tab-close:hover { background: rgba(255,255,255,0.1); fill: #fff; }
+.tab-close svg { width: 12px; height: 12px; }
+
+/* VIEWS WRAPPER */
+.views-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.view { display: none; flex: 1; overflow-y: auto; }
+.view.active { display: flex; }
+
+/* WELCOME CONTENT */
+.welcome-container { padding: 50px 80px; flex-direction: column; }
+.welcome-header h1 { font-size: 32px; font-weight: 400; margin-bottom: 5px; color: #e7e7e7; }
+.welcome-header p { font-size: 16px; color: #858585; margin-bottom: 40px; }
+.welcome-content { display: flex; gap: 60px; max-width: 900px; }
+.welcome-column { flex: 1; }
+.section { margin-bottom: 30px; }
+.section h2 { font-size: 18px; font-weight: 400; margin-bottom: 15px; color: #e7e7e7; }
+.action-list { list-style: none; }
+.action-list li { display: flex; align-items: center; margin-bottom: 10px; color: var(--vscode-link); cursor: pointer; font-size: 13px; }
+.action-list li:hover { text-decoration: underline; }
+.action-list svg { width: 16px; height: 16px; fill: var(--vscode-link); margin-right: 8px; }
+.walkthrough-item { background: var(--vscode-box-bg); padding: 12px 15px; border-radius: 4px; display: flex; align-items: center; cursor: pointer; margin-bottom: 10px; font-size: 13px; border: 1px solid transparent; }
+.walkthrough-item:hover { border-color: #3c3c3c; }
+.walkthrough-item svg { width: 16px; height: 16px; fill: var(--vscode-link); margin-right: 10px; }
+
+/* CODE EDITOR VIEW */
+.code-editor { font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; overflow: auto; }
+.line-numbers { padding: 15px 15px 15px 20px; color: #858585; text-align: right; line-height: 22px; user-select: none; border-right: 1px solid #333; }
+.code-content { padding: 15px; white-space: pre; color: #d4d4d4; line-height: 22px; flex: 1; outline: none; }
+
+/* SYNTAX HIGHLIGHTING CLASSES */
+.syn-keyword { color: #569cd6; } .syn-string { color: #ce9178; } .syn-tag { color: #569cd6; } 
+.syn-attr { color: #9cdcfe; } .syn-value { color: #ce9178; } .syn-comment { color: #6a9955; }
+
+/* TERMINAL PANEL */
+.terminal-panel { height: 200px; background: var(--vscode-editor-bg); display: flex; flex-direction: column; position: relative; flex-shrink: 0; }
+.terminal-panel.hidden { display: none; }
+.terminal-resize-handle { position: absolute; top: -2px; left: 0; right: 0; height: 4px; cursor: ns-resize; z-index: 10; background: var(--vscode-titleBar-bg); transition: background 0.2s; }
+.terminal-resize-handle:hover, .terminal-resize-handle.active { background: var(--vscode-link); }
+.panel-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-top: 2px; }
+.panel-tabs { display: flex; }
+.panel-tab { padding: 8px 12px; cursor: pointer; color: #858585; text-transform: uppercase; }
+.panel-tab:hover { color: #ccc; }
+.panel-tab.active { color: #e7e7e7; border-bottom: 1px solid var(--vscode-link); }
+.panel-actions { display: flex; align-items: center; }
+.panel-actions svg { width: 14px; height: 14px; fill: #858585; cursor: pointer; padding: 2px; border-radius: 3px; }
+.panel-actions svg:hover { background: rgba(255,255,255,0.1); fill: #fff; }
+.terminal-content { flex: 1; padding: 10px 15px; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; color: #cccccc; overflow-y: auto; }
+
+/* STATUS BAR */
+.status-bar { height: 22px; background: var(--vscode-statusBar-bg); display: flex; justify-content: space-between; align-items: center; padding: 0 10px; font-size: 12px; color: var(--vscode-statusBar-fg); border-top: 1px solid rgba(255,255,255,0.05); z-index: 3; }
+.status-bar-section { display: flex; align-items: center; gap: 12px; }
+.status-item { display: flex; align-items: center; gap: 5px; cursor: pointer; height: 100%; padding: 0 4px; }
+.status-item:hover { background: rgba(255,255,255,0.1); }
+.status-item svg { width: 14px; height: 14px; fill: currentColor; }
+.status-item.remote { background: var(--vscode-icon-blue); color: white; padding: 0 8px; margin-left: -10px; height: 22px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.status-item.remote:hover { background: #006bb3; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-left">
+    <svg class="app-icon" viewBox="0 0 24 24"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>
+    <div class="menu-items">
+      <div class="menu-item">File</div><div class="menu-item">Edit</div><div class="menu-item">Selection</div>
+      <div class="menu-item">View</div><div class="menu-item">Go</div><div class="menu-item">Run</div>
+    </div>
+  </div>
+  <div class="top-bar-center">
+    <div class="search-box">
+      <svg viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+      Search
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <div class="window-control"><svg viewBox="0 0 16 16"><path d="M14 8v1H2V8h12z"/></svg></div>
+    <div class="window-control"><svg viewBox="0 0 16 16"><path d="M3 3v10h10V3H3zm9 9H4V4h8v8z"/></svg></div>
+    <div class="window-control close"><svg viewBox="0 0 16 16"><path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- ACTIVITY BAR -->
+  <div class="activity-bar" id="activity-bar">
+    <div class="activity-icons">
+      <div class="icon active" onclick="switchSidebarView('explorer', this)" id="icon-explorer"><svg viewBox="0 0 24 24"><path d="M3 3h12l6 6v12H3V3zm13 1.5l4.5 4.5H16V4.5zM4 4v16h16V10h-5V4H4z"/></svg></div>
+      <div class="icon" onclick="switchSidebarView('search', this)" id="icon-search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div>
+      <div class="icon" onclick="switchSidebarView('scm', this)" id="icon-scm"><svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="17" r="3"/><path d="M7 10v4M10 17h4M14 17l-4-4V7" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+      <div class="icon" onclick="toggleTerminal()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="icon" onclick="switchSidebarView('extensions', this)" id="icon-extensions"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/></svg></div>
+    </div>
+    <div class="activity-icons">
+      <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M19.4 13c.1-.6.1-1.3 0-1.9l2.2-1.7-2.1-3.6-2.6 1c-.8-.6-1.7-1.1-2.6-1.4l-.4-2.8h-4.2l-.4 2.8c-.9.3-1.8.8-2.6 1.4l-2.6-1-2.1 3.6 2.2 1.7c-.1.6-.1 1.3 0 1.9l-2.2 1.7 2.1 3.6 2.6-1c.8.6 1.7 1.1 2.6 1.4l.4 2.8h4.2l.4-2.8c.9-.3 1.8-.8 2.6-1.4l2.6 1 2.1-3.6-2.2-1.7zM12 15.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR (EXPLORER) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span id="sidebar-title">Explorer</span>
+      <svg viewBox="0 0 16 16" style="width: 14px; height: 14px; fill: #ccc;"><path d="M3 5h10l-5 6z"/></svg>
+    </div>
+    <div class="sidebar-content">
+      
+      <!-- 1. EXPLORER VIEW -->
+      <div class="sidebar-view active" id="view-explorer">
+        <details open>
+          <summary>
+            <svg class="folder-icon" viewBox="0 0 16 16"><path d="M3 5l5 6 5-6H3z"/></svg>
+            <strong>PROJECT</strong>
+          </summary>
+          <div class="folder-content">
+            <div class="file-item" onclick="openFile('index.html')" id="file-index.html">
+              <svg class="file-icon" style="fill:#e34f26;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>
+              index.html
+            </div>
+            <div class="file-item" onclick="openFile('style.css')" id="file-style.css">
+              <svg class="file-icon" style="fill:#1572B6;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>
+              style.css
+            </div>
+            <div class="file-item" onclick="openFile('app.js')" id="file-app.js">
+               <svg class="file-icon" style="fill:#F7DF1E;" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2zm5.7 9.8c-.3-.2-.5-.5-.6-.9l1.4-.2c0 .2.1.4.3.5.2.1.4.2.7.2.3 0 .5-.1.7-.2.2-.1.2-.3.2-.5 0-.2 0-.3-.2-.5-.1-.1-.4-.2-.8-.4-.7-.2-1.1-.5-1.4-.8-.2-.3-.4-.7-.4-1.1 0-.5.2-.9.5-1.2.3-.3.8-.5 1.3-.5.5 0 .9.1 1.2.4.3.3.5.7.6 1.1l-1.3.2c0-.2-.1-.4-.2-.5-.2-.1-.4-.2-.6-.2-.3 0-.5.1-.6.2-.1.1-.2.2-.2.4s.1.3.3.5c.1.1.4.2.8.4.6.2 1 .5 1.2.8.2.3.4.7.4 1.1 0 .5-.2.9-.5 1.2-.4.3-.8.5-1.4.5-.6 0-1.1-.2-1.4-.5zm-3.6.4c-.4-.4-.6-1-.6-1.7V6H5v4.2c0 .5.1.8.3 1s.4.2.8.2c.2 0 .4 0 .6-.1l.1 1.2c-.3.1-.7.2-1 .2-.7.1-1.3-.1-1.7-.5z"/></svg>
+              app.js
+            </div>
+          </div>
+        </details>
+        <details>
+          <summary>
+            <svg class="folder-icon" viewBox="0 0 16 16"><path d="M3 5l5 6 5-6H3z"/></svg>
+            <strong>ASSETS</strong>
+          </summary>
+          <div class="folder-content">
+            <div class="file-item" onclick="openFile('logo.svg')" id="file-logo.svg">
+               <svg class="file-icon" style="fill:#e1e1e1;" viewBox="0 0 16 16"><path d="M2 2h12v12H2z"/></svg>
+              logo.svg
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- 2. SEARCH VIEW -->
+      <div class="sidebar-view" id="view-search">
+        <div class="sidebar-padding">
+          <input type="text" class="vscode-input" placeholder="Search">
+          <input type="text" class="vscode-input mt-5" placeholder="Replace">
+          <div class="mt-10" style="color: #858585; font-size: 12px; text-align: center;">
+            Press Enter to search
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SOURCE CONTROL VIEW -->
+      <div class="sidebar-view" id="view-scm">
+        <div class="sidebar-padding">
+          <textarea class="vscode-input" placeholder="Message (Ctrl+Enter to commit)"></textarea>
+          <button class="vscode-button">Commit</button>
+          
+          <div class="mt-10">
+            <div class="scm-header">Changes</div>
+            <div class="file-item" style="padding-left: 10px;">
+              <svg class="file-icon" style="fill:#e34f26;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>
+              <span>index.html</span>
+              <span class="scm-badge">M</span>
+            </div>
+            <div class="file-item" style="padding-left: 10px;">
+              <svg class="file-icon" style="fill:#1572B6;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>
+              <span>style.css</span>
+              <span class="scm-badge" style="color: #14ce14;">U</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. EXTENSIONS VIEW -->
+      <div class="sidebar-view" id="view-extensions">
+        <div class="sidebar-padding">
+          <input type="text" class="vscode-input" placeholder="Search Extensions in Marketplace">
+          
+          <div class="mt-10">
+            <div class="scm-header">Popular</div>
+            
+            <div class="extension-item">
+              <div class="ext-icon" style="background: white;"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" width="24" height="24"></div>
+              <div class="ext-details">
+                <div class="ext-name">Prettier - Code formatter</div>
+                <div class="ext-author">Prettier</div>
+                <button class="vscode-button" style="width: 60px;">Install</button>
+              </div>
+            </div>
+
+            <div class="extension-item">
+              <div class="ext-icon" style="background: #4b32c3;"><svg style="fill:white;" width="24" height="24" viewBox="0 0 16 16"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2z"/></svg></div>
+              <div class="ext-details">
+                <div class="ext-name">ESLint</div>
+                <div class="ext-author">Microsoft</div>
+                <button class="vscode-button" style="width: 60px;">Install</button>
+              </div>
+            </div>
+
+            <div class="extension-item">
+              <div class="ext-icon" style="background: #3776ab;"><svg style="fill:white;" width="24" height="24" viewBox="0 0 16 16"><path d="M8 2.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg></div>
+              <div class="ext-details">
+                <div class="ext-name">Python</div>
+                <div class="ext-author">Microsoft</div>
+                <button class="vscode-button" style="width: 60px;">Install</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SIDEBAR RESIZE HANDLE -->
+  <div class="resize-handle" id="resize"></div>
+
+  <!-- EDITOR AREA -->
+  <div class="editor-area">
+    <div class="tabs" id="tabs"></div>
+
+    <div class="views-wrapper">
+      <!-- WELCOME VIEW -->
+      <div class="view welcome-container active" id="view-Welcome">
+        <div class="welcome-header">
+          <h1>Visual Studio Code</h1>
+          <p>Editing evolved</p>
+        </div>
+
+        <div class="welcome-content">
+          <div class="welcome-column">
+            <div class="section">
+              <h2>Start</h2>
+              <ul class="action-list">
+                <li onclick="openFile('index.html')"><svg viewBox="0 0 16 16"><path d="M13.5 2h-11v12h11V2zM12 13H4V3h8v10zM7 5H5v1h2V5zm3 0H8v1h2V5zm-3 2H5v1h2V7zm3 0H8v1h2V7zm-3 2H5v1h2V9zm3 0H8v1h2V9zm-3 2H5v1h2v-1zm3 0H8v1h2v-1z"/></svg> New File...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M1 3.5l1-1h4.5l1.5 1.5h6l1 1v7.5l-1 1h-13l-1-1v-9zm1 .5v8h12v-7H7.5L6 3.5H2z"/></svg> Open File...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M14 4H7.5L6 2.5H1v11h13V4z"/></svg> Open Folder...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M5.5 2a2.5 2.5 0 1 0 .5 4.95V9.5A1.5 1.5 0 0 0 7.5 11h3.05a2.5 2.5 0 1 0 0-1H7.5a.5.5 0 0 1-.5-.5V6.95a2.5 2.5 0 1 0-1.5 0z"/></svg> Clone Git Repository...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M5.5 4l-4 4 4 4 1-1-3-3 3-3-1-1zM10.5 4l1 1-3 3 3 3-1 1 4-4-4-4z"/></svg> Connect to...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M2.5 2h11l1 1v10l-1 1h-11l-1-1V3l1-1zm.5 1v9h10V3H3z"/></svg> Generate New Workspace...</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="welcome-column">
+            <div class="section">
+              <h2>Walkthroughs</h2>
+              <div class="walkthrough-item">
+                <svg viewBox="0 0 16 16"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 1.52.88 2.92 2.2 3.69V11.5a.5.5 0 0 0 .5.5h3.6a.5.5 0 0 0 .5-.5V9.69c1.32-.77 2.2-2.17 2.2-3.69A4.5 4.5 0 0 0 8 1.5zm2 7.7V11H6V9.2c-1.12-.66-1.8-1.84-1.8-3.2A3.5 3.5 0 0 1 8 2.5a3.5 3.5 0 0 1 3.8 3.5c0 1.36-.68 2.54-1.8 3.2zM7.5 13v1h1v-1h-1z"/></svg>
+                <span>Learn the Fundamentals</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CODE EDITOR VIEW -->
+      <div class="view code-editor" id="view-Editor">
+        <div class="line-numbers" id="line-numbers"></div>
+        <div class="code-content" id="code-content" contenteditable="true" spellcheck="false"></div>
+      </div>
+    </div>
+
+    <!-- TERMINAL PANEL -->
+    <div class="terminal-panel" id="terminal-panel">
+      <div class="terminal-resize-handle" id="terminal-resize"></div>
+      <div class="panel-header">
+        <div class="panel-tabs">
+          <div class="panel-tab">PROBLEMS</div>
+          <div class="panel-tab">OUTPUT</div>
+          <div class="panel-tab">DEBUG CONSOLE</div>
+          <div class="panel-tab active">TERMINAL</div>
+        </div>
+        <div class="panel-actions">
+           <svg class="close-panel" onclick="toggleTerminal()" viewBox="0 0 16 16"><path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg>
+        </div>
+      </div>
+      <div class="terminal-content">
+        <span style="color: #3794ff;">C:\Users\MARO\project></span> npm start<br>
+        <span style="color: #cccccc;">Starting the development server...</span><br><br>
+        <span style="color: #6a9955;">Compiled successfully!</span><br><br>
+        <span style="color: #cccccc;">You can now view the app in the browser.</span><br>
+        <span style="color: #3794ff;">Local:</span>            http://localhost:3000<br>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-bar-section">
+    <div class="status-item remote">
+      <svg viewBox="0 0 16 16"><path d="M5.5 4l-4 4 4 4 1-1-3-3 3-3-1-1zM10.5 4l1 1-3 3 3 3-1 1 4-4-4-4z"/></svg>
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 16 16"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0zm4.146-2.146a.5.5 0 0 1 .708 0L8 7.293l1.646-1.647a.5.5 0 0 1 .708.708L8.707 8l1.647 1.646a.5.5 0 0 1-.708.708L8 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L7.293 8 5.646 6.354a.5.5 0 0 1 0-.708z"/></svg> 0
+      <svg viewBox="0 0 16 16"><path d="M7.56 1.25a.5.5 0 0 1 .88 0l6.5 11.5a.5.5 0 0 1-.44.75H1.5a.5.5 0 0 1-.44-.75l6.5-11.5zM8 12.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm-.5-5v3h1v-3h-1z"/></svg> 0
+    </div>
+    <div class="status-item" id="status-lang">
+      ) Activating Extensions...
+    </div>
+  </div>
+  <div class="status-bar-section">
+    <div class="status-item">
+      <svg viewBox="0 0 16 16"><path d="M2.5 1h11l1 1v12l-1 1h-11l-1-1V2l1-1zM3 2v12h10V2H3zm2 3h6v1H5V5zm0 3h6v1H5V8zm0 3h4v1H5v-1z"/></svg>
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 16 16"><path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm-1.5 3a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm-2.854-3.146a.5.5 0 0 1 .708.708A4.986 4.986 0 0 0 3 8c0 1.38.56 2.631 1.464 3.536a.5.5 0 0 1-.708.708A5.986 5.986 0 0 1 2 8c0-1.657.672-3.157 1.758-4.242zm9.192-.708a.5.5 0 0 1 .708-.708A5.986 5.986 0 0 1 14 8c0 1.657-.672 3.157-1.758 4.242a.5.5 0 0 1-.708-.708A4.986 4.986 0 0 0 13 8c0-1.38-.56-2.631-1.464-3.536z"/></svg> Go Live
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 16 16"><path d="M8 1.5a3.5 3.5 0 0 0-3.5 3.5V8L3.146 9.354a.5.5 0 0 0 .354.854h9a.5.5 0 0 0 .354-.854L11.5 8V5A3.5 3.5 0 0 0 8 1.5zM6 11.5v.5a2 2 0 1 0 4 0v-.5H6z"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- MINIMAL JAVASCRIPT FOR INTERACTIVITY -->
+<script>
+// Mock File System
+const files = {
+  "index.html": {
+    lang: "html",
+    content: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <title>App</title>\n</head>\n<body>\n  <div class="app">\n    <h1>Hello Interactive Code Clone</h1>\n    <p>This is syntax highlighted!</p>\n  </div>\n</body>\n</html>`
+  },
+  "style.css": {
+    lang: "css",
+    content: `body {\n  background: #1e1e1e;\n  color: white;\n  font-family: sans-serif;\n}\n\n.app {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n}\n\nh1 {\n  font-size: 2rem;\n  color: #3794ff;\n}`
+  },
+  "app.js": {
+    lang: "js",
+    content: `function greet() {\n  const message = "Interactive JS works!";\n  console.log(message);\n  return true;\n}\n\ngreet();`
+  },
+  "logo.svg": {
+    lang: "html",
+    content: `<svg viewBox="0 0 100 100">\n  <circle cx="50" cy="50" r="40" fill="blue" />\n</svg>`
+  }
+};
+
+// State
+let openTabs = ["Welcome"];
+let activeTab = "Welcome";
+let sidebarOpen = true;
+let terminalOpen = true;
+let activeSidebarView = 'explorer';
+
+// DOM Elements
+const sidebarEl = document.getElementById('sidebar');
+const sidebarTitleEl = document.getElementById('sidebar-title');
+const tabsEl = document.getElementById('tabs');
+const viewWelcome = document.getElementById('view-Welcome');
+const viewEditor = document.getElementById('view-Editor');
+const lineNumbersEl = document.getElementById('line-numbers');
+const codeContentEl = document.getElementById('code-content');
+const statusLangEl = document.getElementById('status-lang');
+const terminalPanel = document.getElementById("terminal-panel");
+
+// Sidebar Views Toggle Logic
+function switchSidebarView(viewId, iconElement) {
+  // Update icons
+  document.querySelectorAll('.activity-icons .icon').forEach(icon => icon.classList.remove('active'));
+  iconElement.classList.add('active');
+
+  // If clicking the currently active one and sidebar is open, collapse it
+  if (activeSidebarView === viewId && sidebarOpen) {
+    sidebarEl.classList.add('hidden');
+    document.getElementById("resize").style.display = 'none';
+    sidebarOpen = false;
+    iconElement.classList.remove('active'); // toggle highlight off
+    return;
+  }
+  
+  // Make sure sidebar is open
+  sidebarEl.classList.remove('hidden');
+  document.getElementById("resize").style.display = 'block';
+  sidebarOpen = true;
+  activeSidebarView = viewId;
+
+  // Update views
+  document.querySelectorAll('.sidebar-view').forEach(view => view.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+
+  // Update header text
+  if(viewId === 'explorer') sidebarTitleEl.innerText = 'Explorer';
+  if(viewId === 'search') sidebarTitleEl.innerText = 'Search';
+  if(viewId === 'scm') sidebarTitleEl.innerText = 'Source Control';
+  if(viewId === 'extensions') sidebarTitleEl.innerText = 'Extensions';
+}
+
+// Sidebar Resizing
+const resizeHandle = document.getElementById("resize");
+const activityBar = document.getElementById("activity-bar");
+
+resizeHandle.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  resizeHandle.classList.add('active');
+  document.addEventListener("mousemove", resizeSidebar);
+  document.addEventListener("mouseup", () => {
+    resizeHandle.classList.remove('active');
+    document.removeEventListener("mousemove", resizeSidebar);
+  }, { once: true });
+});
+
+function resizeSidebar(e) {
+  const newWidth = e.clientX - activityBar.getBoundingClientRect().width;
+  if (newWidth > 150 && newWidth < 600) {
+    sidebarEl.style.width = newWidth + "px";
+  }
+}
+
+// Terminal Resizing
+const terminalResizeHandle = document.getElementById("terminal-resize");
+
+terminalResizeHandle.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  terminalResizeHandle.classList.add('active');
+  document.addEventListener("mousemove", resizeTerminal);
+  document.addEventListener("mouseup", () => {
+    terminalResizeHandle.classList.remove('active');
+    document.removeEventListener("mousemove", resizeTerminal);
+  }, { once: true });
+});
+
+function resizeTerminal(e) {
+  const containerHeight = document.querySelector('.editor-area').getBoundingClientRect().height;
+  const topOffset = document.querySelector('.editor-area').getBoundingClientRect().top;
+  const newHeight = containerHeight - (e.clientY - topOffset);
+  if (newHeight > 50 && newHeight < containerHeight - 50) {
+    terminalPanel.style.height = newHeight + "px";
+  }
+}
+
+// Toggle Terminal
+function toggleTerminal() {
+  terminalOpen = !terminalOpen;
+  if(terminalOpen) {
+    terminalPanel.classList.remove('hidden');
+  } else {
+    terminalPanel.classList.add('hidden');
+  }
+}
+
+// Basic Regex Syntax Highlighter
+function highlightCode(code, lang) {
+  let highlighted = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  if (lang === 'html') {
+    highlighted = highlighted.replace(/(&lt;\/?[\w\-]+)/g, '<span class="syn-tag">$1</span>');
+    highlighted = highlighted.replace(/([\w\-]+)(=)("[^"]*")/g, '<span class="syn-attr">$1</span>$2<span class="syn-value">$3</span>');
+  } else if (lang === 'css') {
+    highlighted = highlighted.replace(/([^\{\}\n]+)(\{)/g, '<span class="syn-tag">$1</span>$2');
+    highlighted = highlighted.replace(/([\w\-]+)(\s*:)/g, '<span class="syn-attr">$1</span>$2');
+    highlighted = highlighted.replace(/:\s*([^;]+);/g, ': <span class="syn-value">$1</span>;');
+  } else if (lang === 'js') {
+    highlighted = highlighted.replace(/\b(function|const|let|var|return|if|else|for|while|true|false)\b/g, '<span class="syn-keyword">$1</span>');
+    highlighted = highlighted.replace(/("[^"]*"|'[^']*')/g, '<span class="syn-string">$1</span>');
+  }
+  return highlighted;
+}
+
+// Render Tabs
+function renderTabs() {
+  tabsEl.innerHTML = '';
+  openTabs.forEach(tab => {
+    const tabDiv = document.createElement('div');
+    tabDiv.className = 'tab' + (tab === activeTab ? ' active' : '');
+    tabDiv.onclick = () => openFile(tab);
+
+    let iconHtml = '';
+    if (tab === 'Welcome') {
+        iconHtml = '<svg class="tab-icon" viewBox="0 0 24 24"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>';
+    } else if (tab.endsWith('.html') || tab.endsWith('.svg')) {
+        iconHtml = '<svg class="tab-icon" style="fill:#e34f26;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>';
+    } else if (tab.endsWith('.css')) {
+        iconHtml = '<svg class="tab-icon" style="fill:#1572B6;" viewBox="0 0 16 16"><path d="M1 2l1.3 11 5.7 1.6L13.7 13 15 2H1zm12.3 10.3l-5.3 1.4-5.3-1.4L1.9 3h12.2l-.8 9.3zM4.6 4.7h8.4l-.2 2.1H4.8l.2 2.1h7.8l-.4 3.7-4.4 1.2-4.4-1.2-.2-2h2l.1.9 2.5.7 2.5-.7.2-1.8H4.4l-.2-5z"/></svg>';
+    } else if (tab.endsWith('.js')) {
+        iconHtml = '<svg class="tab-icon" style="fill:#F7DF1E;" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2zm5.7 9.8c-.3-.2-.5-.5-.6-.9l1.4-.2c0 .2.1.4.3.5.2.1.4.2.7.2.3 0 .5-.1.7-.2.2-.1.2-.3.2-.5 0-.2 0-.3-.2-.5-.1-.1-.4-.2-.8-.4-.7-.2-1.1-.5-1.4-.8-.2-.3-.4-.7-.4-1.1 0-.5.2-.9.5-1.2.3-.3.8-.5 1.3-.5.5 0 .9.1 1.2.4.3.3.5.7.6 1.1l-1.3.2c0-.2-.1-.4-.2-.5-.2-.1-.4-.2-.6-.2-.3 0-.5.1-.6.2-.1.1-.2.2-.2.4s.1.3.3.5c.1.1.4.2.8.4.6.2 1 .5 1.2.8.2.3.4.7.4 1.1 0 .5-.2.9-.5 1.2-.4.3-.8.5-1.4.5-.6 0-1.1-.2-1.4-.5zm-3.6.4c-.4-.4-.6-1-.6-1.7V6H5v4.2c0 .5.1.8.3 1s.4.2.8.2c.2 0 .4 0 .6-.1l.1 1.2c-.3.1-.7.2-1 .2-.7.1-1.3-.1-1.7-.5z"/></svg>';
+    }
+
+    tabDiv.innerHTML = `
+      ${iconHtml}
+      ${tab}
+      <div class="tab-close" onclick="closeTab('${tab}', event)">
+        <svg viewBox="0 0 16 16"><path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg>
+      </div>
+    `;
+    tabsEl.appendChild(tabDiv);
+  });
+}
+
+// Open File or Switch Tab
+function openFile(filename) {
+  if (!openTabs.includes(filename)) {
+    openTabs.push(filename);
+  }
+  activeTab = filename;
+  
+  // Highlight active file in sidebar
+  document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+  const sidebarItem = document.getElementById('file-' + filename);
+  if(sidebarItem) sidebarItem.classList.add('active');
+
+  updateView();
+}
+
+// Close Tab
+function closeTab(filename, event) {
+  event.stopPropagation();
+  openTabs = openTabs.filter(t => t !== filename);
+  if (activeTab === filename) {
+    activeTab = openTabs.length > 0 ? openTabs[openTabs.length - 1] : null;
+  }
+  updateView();
+}
+
+// Update View Content
+function updateView() {
+  renderTabs();
+
+  if (!activeTab) {
+    viewWelcome.classList.remove('active');
+    viewEditor.classList.remove('active');
+    statusLangEl.innerText = "";
+    return;
+  }
+
+  if (activeTab === 'Welcome') {
+    viewWelcome.classList.add('active');
+    viewEditor.classList.remove('active');
+    statusLangEl.innerText = ") Activating Extensions...";
+  } else {
+    viewWelcome.classList.remove('active');
+    viewEditor.classList.add('active');
+    
+    const fileData = files[activeTab];
+    if (fileData) {
+      statusLangEl.innerText = "{} " + fileData.lang.toUpperCase();
+      
+      // Update line numbers
+      const lines = fileData.content.split('\n').length;
+      let lineHtml = '';
+      for(let i=1; i<=lines; i++) {
+        lineHtml += i + '<br>';
+      }
+      lineNumbersEl.innerHTML = lineHtml;
+
+      // Update and highlight code
+      codeContentEl.innerHTML = highlightCode(fileData.content, fileData.lang);
+    }
+  }
+}
+
+// Initialize
+updateView();
+</script>
+</body>
+</html>
