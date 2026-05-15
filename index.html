@@ -59,6 +59,11 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     /* 
     ========================================
     PURE CSS INTERACTIVITY STATE (HIDDEN INPUTS)
@@ -212,6 +217,19 @@
     .status-item:hover { background: rgba(255,255,255,0.2); }
     .status-item svg { width: 14px; height: 14px; fill: currentColor; }
 
+    /* PANEL */
+    .bottom-panel { height: 200px; background: var(--bg-panel); border-top: 1px solid var(--border); display: flex; flex-direction: column; }
+    .panel-header { height: 35px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; gap: 20px; font-size: 11px; font-weight: 700; color: var(--fg-sub); }
+    .panel-tab { cursor: pointer; transition: var(--transition); border-bottom: 1px solid transparent; height: 100%; display: flex; align-items: center; }
+    .panel-tab:hover { color: var(--fg-bright); }
+    .panel-tab.active { color: var(--fg-bright); border-bottom-color: var(--accent-light); }
+    .terminal-content { flex: 1; background: var(--bg-darker); padding: 10px 20px; font-family: var(--font-code); font-size: 13px; color: var(--fg-main); overflow-y: auto; }
+    .terminal-cursor { width: 8px; height: 15px; background: var(--fg-sub); display: inline-block; vertical-align: middle; animation: cursorBlink 1s infinite; }
+
+    /* PREMIUM CARDS */
+    .premium-card { background: var(--bg-hover); border-radius: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); transition: var(--transition); cursor: pointer; }
+    .premium-card:hover { background: var(--bg-active); border-color: var(--accent-light); }
+
     /* 
     ========================================
     CSS LOGIC (THE MAGIC)
@@ -241,23 +259,31 @@
     /* Tabs Logic */
     #tab-welcome:checked ~ .workbench .tabs-container label[for="tab-welcome"],
     #tab-index:checked ~ .workbench .tabs-container label[for="tab-index"],
-    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"] {
+    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"],
+    #tab-readme:checked ~ .workbench .tabs-container label[for="tab-readme"],
+    #tab-app:checked ~ .workbench .tabs-container label[for="tab-app"] {
       background: var(--bg-dark); color: var(--fg-bright);
     }
     #tab-welcome:checked ~ .workbench .tabs-container label[for="tab-welcome"]::after,
     #tab-index:checked ~ .workbench .tabs-container label[for="tab-index"]::after,
-    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"]::after {
+    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"]::after,
+    #tab-readme:checked ~ .workbench .tabs-container label[for="tab-readme"]::after,
+    #tab-app:checked ~ .workbench .tabs-container label[for="tab-app"]::after {
       background: var(--accent-light);
     }
 
     #tab-welcome:checked ~ .workbench .view-welcome { display: flex; }
     #tab-index:checked ~ .workbench .view-index { display: flex; }
     #tab-style:checked ~ .workbench .view-style { display: flex; }
+    #tab-readme:checked ~ .workbench .view-readme { display: flex; }
+    #tab-app:checked ~ .workbench .view-app { display: flex; }
 
     /* Status Bar Language Logic */
     #tab-welcome:checked ~ .status-bar .lang-status::after { content: "Plain Text"; }
     #tab-index:checked ~ .status-bar .lang-status::after { content: "HTML"; }
     #tab-style:checked ~ .status-bar .lang-status::after { content: "CSS"; }
+    #tab-readme:checked ~ .status-bar .lang-status::after { content: "Markdown"; }
+    #tab-app:checked ~ .status-bar .lang-status::after { content: "JavaScript"; }
 
   </style>
 </head>
@@ -274,6 +300,8 @@
   <input type="radio" name="tabs" id="tab-welcome" checked>
   <input type="radio" name="tabs" id="tab-index">
   <input type="radio" name="tabs" id="tab-style">
+  <input type="radio" name="tabs" id="tab-readme">
+  <input type="radio" name="tabs" id="tab-app">
 
   <!-- TOP TITLE BAR -->
   <div class="title-bar">
@@ -342,11 +370,17 @@
             <span style="color: #61afef; margin-right: 6px;">📦</span> VS-PROJECT
           </div>
           <div style="padding-left: 12px;">
+            <label for="tab-readme" class="tree-item">
+              <span class="item-icon">📝</span> README.md
+            </label>
             <label for="tab-index" class="tree-item">
               <span class="item-icon">🌐</span> index.html
             </label>
             <label for="tab-style" class="tree-item">
               <span class="item-icon">🎨</span> style.css
+            </label>
+            <label for="tab-app" class="tree-item">
+              <span class="item-icon">📜</span> app.js
             </label>
           </div>
         </div>
@@ -354,18 +388,58 @@
         <!-- SEARCH -->
         <div class="sidebar-section sec-search" style="padding: 15px;">
           <input type="text" class="global-search" style="width: 100%; display: block; margin-bottom: 12px; padding: 6px 10px;" placeholder="Search text in project...">
-          <div style="font-size: 12px; color: var(--fg-sub);">Search results will appear here.</div>
+          <div style="font-size: 11px; color: var(--fg-sub); margin-bottom: 15px;">3 results in 2 files</div>
+          
+          <div class="premium-card">
+            <div style="font-weight: 600; color: var(--accent-light); font-size: 12px;">index.html</div>
+            <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">&lt;div class="container"&gt;...</div>
+          </div>
+          <div class="premium-card">
+            <div style="font-weight: 600; color: var(--accent-light); font-size: 12px;">style.css</div>
+            <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">.container { display: flex; }</div>
+          </div>
         </div>
         
         <!-- SCM -->
         <div class="sidebar-section sec-scm" style="padding: 15px;">
            <div style="font-size: 11px; margin-bottom: 12px; font-weight: 600;">SOURCE CONTROL</div>
-           <div style="font-size: 12px; color: var(--fg-sub);">No active changes.</div>
+           <div class="premium-card">
+             <div style="display: flex; justify-content: space-between; align-items: center;">
+               <span style="font-size: 12px; font-weight: 600;">index.html</span>
+               <span style="color: var(--warning); font-weight: 900; font-size: 12px;">M</span>
+             </div>
+             <div style="font-size: 11px; color: var(--fg-sub);">Working Tree</div>
+           </div>
+           <div class="premium-card">
+             <div style="display: flex; justify-content: space-between; align-items: center;">
+               <span style="font-size: 12px; font-weight: 600;">style.css</span>
+               <span style="color: var(--success); font-weight: 900; font-size: 12px;">U</span>
+             </div>
+             <div style="font-size: 11px; color: var(--fg-sub);">Untracked</div>
+           </div>
+           <button style="width: 100%; background: var(--accent); color: white; border: none; padding: 6px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 10px;">Commit</button>
         </div>
 
         <!-- EXTENSIONS -->
         <div class="sidebar-section sec-extensions" style="padding: 10px;">
-          <div style="font-size: 12px; color: var(--fg-sub); padding: 5px;">Installed Extensions</div>
+          <div class="premium-card">
+            <div style="display: flex; gap: 10px;">
+              <div style="width: 35px; height: 35px; background: #e34f26; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px;">H5</div>
+              <div>
+                <div style="font-size: 12px; font-weight: 600;">HTML Snippets</div>
+                <div style="font-size: 10px; color: var(--fg-sub);">Microsoft • 12.5M</div>
+              </div>
+            </div>
+          </div>
+          <div class="premium-card">
+            <div style="display: flex; gap: 10px;">
+              <div style="width: 35px; height: 35px; background: #2965f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px;">C3</div>
+              <div>
+                <div style="font-size: 12px; font-weight: 600;">CSS Intellisense</div>
+                <div style="font-size: 10px; color: var(--fg-sub);">Microsoft • 8.1M</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -378,11 +452,17 @@
           <svg class="tab-icon" viewBox="0 0 24 24" style="fill:var(--accent-light);"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>
           Welcome
         </label>
+        <label for="tab-readme" class="tab-label">
+          <span class="tab-icon">📝</span> README.md
+        </label>
         <label for="tab-index" class="tab-label">
           <span class="tab-icon">🌐</span> index.html
         </label>
         <label for="tab-style" class="tab-label">
           <span class="tab-icon">🎨</span> style.css
+        </label>
+        <label for="tab-app" class="tab-label">
+          <span class="tab-icon">📜</span> app.js
         </label>
       </div>
 
@@ -404,6 +484,10 @@
               </ul>
               
               <h2>Recent</h2>
+              <label for="tab-readme" style="display:block; padding: 6px 0; cursor: pointer;">
+                <span style="font-size:13px; font-weight:600; color:var(--fg-main); margin-right:10px;">README.md</span>
+                <span style="font-size:11px; color:var(--fg-sub);">C:\Project</span>
+              </label>
               <label for="tab-index" style="display:block; padding: 6px 0; cursor: pointer;">
                 <span style="font-size:13px; font-weight:600; color:var(--fg-main); margin-right:10px;">index.html</span>
                 <span style="font-size:11px; color:var(--fg-sub);">C:\Project</span>
@@ -416,12 +500,32 @@
             
             <div class="welcome-col">
               <h2>Walkthroughs</h2>
-              <div style="background:var(--bg-side); padding:15px; border-radius:6px; margin-bottom:15px; border:1px solid transparent;">
+              <div class="premium-card">
                 <h3 style="font-size:13px; color:var(--accent-light); margin-bottom:5px;">Get Started with VS Code</h3>
                 <p style="font-size:12px; color:var(--fg-sub);">Discover the best features to boost your productivity.</p>
               </div>
+              <div class="premium-card">
+                <h3 style="font-size:13px; color:var(--accent-light); margin-bottom:5px;">Optimize your Workflow</h3>
+                <p style="font-size:12px; color:var(--fg-sub);">Customize shortcuts and settings for maximum speed.</p>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- VIEW: EDITOR (README.MD) -->
+      <div class="view-content view-readme">
+        <div class="editor-wrapper">
+          <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div>
+          </div>
+          <textarea class="code-textarea" spellcheck="false" placeholder="Type your Markdown here..."># VS Code Clone Pro
+
+This is a **strictly HTML and CSS** interactive clone of the Visual Studio Code interface.
+
+- No JavaScript used for UI interactions.
+- High visual fidelity.
+- Pure CSS state management.</textarea>
         </div>
       </div>
 
@@ -429,15 +533,16 @@
       <div class="view-content view-index">
         <div class="editor-wrapper">
           <div class="line-numbers">
-            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div>
           </div>
           <textarea class="code-textarea" spellcheck="false" placeholder="Type your HTML code here..."><!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Document</title>
 </head>
 <body>
-  
+  <h1>Hello World</h1>
 </body>
 </html></textarea>
         </div>
@@ -447,15 +552,49 @@
       <div class="view-content view-style">
         <div class="editor-wrapper">
           <div class="line-numbers">
-            <div>1</div><div>2</div><div>3</div><div>4</div>
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
           </div>
           <textarea class="code-textarea" spellcheck="false" placeholder="Type your CSS code here...">body {
-  background-color: #000;
-  color: #fff;
+  background-color: #090909;
+  color: #cccccc;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
 }</textarea>
         </div>
       </div>
 
+      <!-- VIEW: EDITOR (APP.JS) -->
+      <div class="view-content view-app">
+        <div class="editor-wrapper">
+          <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+          </div>
+          <textarea class="code-textarea" spellcheck="false" placeholder="Type your JavaScript code here...">function init() {
+  console.log("App initialized");
+}
+
+window.onload = init;</textarea>
+        </div>
+      </div>
+
+      <!-- BOTTOM PANEL -->
+      <div class="bottom-panel">
+        <div class="panel-header">
+          <div class="panel-tab">PROBLEMS</div>
+          <div class="panel-tab">OUTPUT</div>
+          <div class="panel-tab">DEBUG CONSOLE</div>
+          <div class="panel-tab active">TERMINAL</div>
+        </div>
+        <div class="terminal-content">
+          <div style="color: var(--success); font-weight: 700; margin-bottom: 5px;">➜ VS Code Web Environment [READY]</div>
+          <div style="color: var(--fg-sub);">* Type code in the editors above.</div>
+          <div style="color: var(--fg-sub);">* Use the activity bar icons to switch views.</div>
+          <div style="color: var(--fg-sub); margin-bottom: 10px;">* Strictly HTML/CSS framework stable.</div>
+          <div><span style="color: var(--accent-light); font-weight: 700;">C:\Users\MARO\project></span> git commit -m "update layout" <span class="terminal-cursor"></span></div>
+          <div style="color: var(--fg-sub); margin-top: 5px;">[main acdd4f8] update layout</div>
+          <div style="color: var(--fg-sub);"> 1 file changed, 244 insertions(+), 129 deletions(-)</div>
+        </div>
+      </div>
     </div>
   </div>
 
