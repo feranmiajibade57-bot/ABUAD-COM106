@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visual Studio Code Pro - Interactive Clone</title>
+  <title>Visual Studio Code Pro - Pure CSS/HTML</title>
   <style>
     /* 
     ========================================
@@ -17,7 +17,6 @@
       --bg-panel: #181818;
       --bg-active: #2a2d2e;
       --bg-hover: #37373d;
-      --bg-tab-inactive: #2d2d2d;
       
       --accent: #007acc;
       --accent-hover: #0062a3;
@@ -28,26 +27,15 @@
       --fg-bright: #ffffff;
       
       --border: #333333;
-      --border-active: #007acc;
-      
-      --error: #f48771;
-      --warning: #cca700;
-      --success: #89d185;
       
       --font-code: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
       --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
       
       --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
     }
 
     /* CSS RESET */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
     body {
       font-family: var(--font-ui);
@@ -58,6 +46,13 @@
       flex-direction: column;
       overflow: hidden;
     }
+
+    /* 
+    ========================================
+    PURE CSS INTERACTIVITY STATE (HIDDEN INPUTS)
+    ========================================
+    */
+    input[type="radio"], input[type="checkbox"] { display: none; }
 
     /* 
     ========================================
@@ -80,664 +75,179 @@
       flex-shrink: 0;
     }
 
-    .title-bar-left, .title-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .app-logo {
-      width: 16px;
-      height: 16px;
-      fill: var(--accent-light);
-    }
-
-    .menu-bar {
-      display: flex;
-      gap: 12px;
-    }
-
-    .menu-item {
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
-      transition: var(--transition);
-      color: var(--fg-main);
-    }
-
-    .menu-item:hover {
-      background: var(--bg-hover);
-      color: var(--fg-bright);
-    }
-
-    .title-bar-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      padding: 0 20px;
-    }
-
+    .title-bar-left, .title-bar-right { display: flex; align-items: center; gap: 15px; }
+    .app-logo { width: 16px; height: 16px; fill: var(--accent-light); }
+    .menu-bar { display: flex; gap: 12px; }
+    .menu-item { cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: var(--transition); color: var(--fg-main); }
+    .menu-item:hover { background: var(--bg-hover); color: var(--fg-bright); }
+    
+    .title-bar-center { flex: 1; display: flex; justify-content: center; padding: 0 20px; }
     .global-search {
-      max-width: 450px;
-      width: 100%;
-      height: 24px;
-      background: var(--bg-hover);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      color: var(--fg-sub);
-      cursor: pointer;
-      transition: var(--transition);
-      font-size: 11px;
+      max-width: 450px; width: 100%; height: 24px; background: var(--bg-hover); border: 1px solid var(--border);
+      border-radius: 6px; display: flex; align-items: center; padding: 0 10px; color: var(--fg-sub); cursor: pointer; font-size: 11px;
     }
-
-    .global-search:hover {
-      border-color: var(--accent-light);
-    }
-
-    .global-search svg {
-      width: 14px;
-      height: 14px;
-      margin-right: 8px;
-      fill: currentColor;
-    }
+    .global-search svg { width: 14px; height: 14px; margin-right: 8px; fill: currentColor; }
 
     /* WORKBENCH */
-    .workbench {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-      position: relative;
-    }
+    .workbench { flex: 1; display: flex; overflow: hidden; position: relative; }
 
     /* ACTIVITY BAR */
     .activity-bar {
-      width: 48px;
-      background: var(--bg-panel);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 10px;
-      flex-shrink: 0;
-      border-right: 1px solid var(--border);
-      z-index: 10;
+      width: 48px; background: var(--bg-panel); display: flex; flex-direction: column;
+      justify-content: space-between; align-items: center; padding-top: 10px; flex-shrink: 0;
+      border-right: 1px solid var(--border); z-index: 10;
     }
 
-    .action-icons {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
+    .action-icons { display: flex; flex-direction: column; width: 100%; }
+    .action-label {
+      width: 48px; height: 48px; display: flex; justify-content: center; align-items: center;
+      cursor: pointer; color: var(--fg-sub); position: relative; transition: var(--transition);
     }
-
-    .action-btn {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      color: var(--fg-sub);
-      position: relative;
-      transition: var(--transition);
-    }
-
-    .action-btn:hover {
-      color: var(--fg-bright);
-    }
-
-    .action-btn.active {
-      color: var(--fg-bright);
-    }
-
-    .action-btn.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--accent-light);
-    }
-
-    .action-btn svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
+    .action-label:hover { color: var(--fg-bright); }
+    .action-label svg { width: 24px; height: 24px; fill: currentColor; }
+    
+    .action-label::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: transparent;
     }
 
     /* SIDEBAR */
     .sidebar {
-      width: 260px;
-      background: var(--bg-side);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      flex-shrink: 0;
-      border-right: 1px solid var(--border);
-    }
-
-    .sidebar.collapsed {
-      width: 0;
-      border-right: none;
+      width: 260px; background: var(--bg-side); display: flex; flex-direction: column;
+      overflow: hidden; flex-shrink: 0; border-right: 1px solid var(--border);
     }
 
     .sidebar-header {
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-transform: uppercase;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--fg-sub);
-      letter-spacing: 1px;
+      padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+      text-transform: uppercase; font-size: 11px; font-weight: 700; color: var(--fg-sub); letter-spacing: 1px;
     }
 
-    .sidebar-content {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: none;
-    }
-
-    .sidebar-content::-webkit-scrollbar {
-      display: none;
-    }
-
-    .sidebar-section {
-      display: none;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .sidebar-section.active {
-      display: block;
-    }
+    .sidebar-content { flex: 1; overflow-y: auto; scrollbar-width: none; }
+    .sidebar-content::-webkit-scrollbar { display: none; }
+    
+    .sidebar-section { display: none; }
 
     /* TREE VIEW */
     .tree-item {
-      display: flex;
-      align-items: center;
-      padding: 4px 20px;
-      cursor: pointer;
-      font-size: 13px;
-      user-select: none;
-      transition: background 0.1s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: flex; align-items: center; padding: 4px 20px; cursor: pointer; font-size: 13px;
+      user-select: none; transition: background 0.1s;
     }
-
-    .tree-item:hover {
-      background: var(--bg-hover);
-    }
-
-    .tree-item.active {
-      background: var(--bg-active);
-      color: var(--fg-bright);
-    }
-
-    .tree-item.folder {
-      font-weight: 600;
-      color: var(--fg-bright);
-    }
-
-    .item-icon {
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .folder-arrow {
-      width: 12px;
-      height: 12px;
-      margin-right: 4px;
-      transition: transform 0.2s;
-      fill: var(--fg-sub);
-    }
-
-    .collapsed .folder-arrow {
-      transform: rotate(-90deg);
-    }
+    .tree-item:hover { background: var(--bg-hover); }
+    .tree-item.folder { font-weight: 600; color: var(--fg-bright); }
+    .item-icon { width: 16px; height: 16px; margin-right: 8px; display: flex; align-items: center; justify-content: center; }
 
     /* EDITOR AREA */
-    .editor-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-dark);
-      overflow: hidden;
-      min-width: 0;
-      position: relative;
-    }
+    .editor-group { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); overflow: hidden; min-width: 0; }
 
     /* TABS */
-    .tabs-container {
-      height: 35px;
-      background: var(--bg-panel);
-      display: flex;
-      overflow-x: auto;
-      scrollbar-width: none;
-      flex-shrink: 0;
+    .tabs-container { height: 35px; background: var(--bg-panel); display: flex; flex-shrink: 0; }
+    
+    .tab-label {
+      display: flex; align-items: center; padding: 0 12px; min-width: 120px; background: var(--bg-panel);
+      border-right: 1px solid var(--bg-darker); cursor: pointer; font-size: 13px; color: var(--fg-sub);
+      position: relative; user-select: none; transition: var(--transition);
     }
+    .tab-label:hover { background: var(--bg-hover); color: var(--fg-bright); }
+    .tab-label::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: transparent; }
+    .tab-icon { width: 16px; height: 16px; margin-right: 8px; fill: currentColor; }
 
-    .tabs-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tab {
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      min-width: 120px;
-      max-width: 200px;
-      background: var(--bg-panel);
-      border-right: 1px solid var(--bg-darker);
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--fg-sub);
-      position: relative;
-      user-select: none;
-      transition: var(--transition);
-    }
-
-    .tab.active {
-      background: var(--bg-dark);
-      color: var(--fg-bright);
-    }
-
-    .tab.active::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: var(--accent-light);
-    }
-
-    .tab:hover {
-      background: var(--bg-hover);
-      color: var(--fg-bright);
-    }
-
-    .tab-close {
-      width: 18px;
-      height: 18px;
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    .tab:hover .tab-close {
-      opacity: 1;
-    }
-
-    .tab-close:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .tab-close svg {
-      width: 12px;
-      height: 12px;
-      fill: currentColor;
-    }
-
-    /* CONTENT VIEWS (Editor vs Welcome) */
-    .view-content {
-      flex: 1;
-      display: none;
-      overflow: hidden;
-      position: relative;
-      background: var(--bg-dark);
-    }
-
-    .view-content.active {
-      display: flex;
-    }
+    /* VIEWS */
+    .view-content { flex: 1; display: none; overflow: hidden; position: relative; background: var(--bg-dark); }
 
     /* WELCOME SCREEN */
-    .welcome-page {
-      flex-direction: column;
-      padding: 50px 10%;
-      overflow-y: auto;
-    }
+    .welcome-page { padding: 50px 10%; overflow-y: auto; width: 100%; }
+    .welcome-header h1 { font-size: 36px; font-weight: 300; margin-bottom: 5px; color: var(--fg-bright); }
+    .welcome-header p { font-size: 16px; color: var(--fg-sub); margin-bottom: 40px; }
+    .welcome-columns { display: flex; gap: 60px; flex-wrap: wrap; }
+    .welcome-col { flex: 1; min-width: 250px; }
+    .welcome-col h2 { font-size: 16px; font-weight: 600; color: var(--fg-bright); margin-bottom: 15px; }
+    .welcome-list { list-style: none; margin-bottom: 30px; }
+    .welcome-list li { display: flex; align-items: center; padding: 6px 0; font-size: 13px; color: var(--accent-light); cursor: pointer; }
+    .welcome-list li:hover { text-decoration: underline; }
+    .welcome-list li svg { width: 16px; height: 16px; fill: currentColor; margin-right: 10px; }
 
-    .welcome-header h1 {
-      font-size: 36px;
-      font-weight: 300;
-      margin-bottom: 5px;
-      color: var(--fg-bright);
-    }
-
-    .welcome-header p {
-      font-size: 16px;
-      color: var(--fg-sub);
-      margin-bottom: 40px;
-    }
-
-    .welcome-columns {
-      display: flex;
-      gap: 60px;
-      flex-wrap: wrap;
-    }
-
-    .welcome-col {
-      flex: 1;
-      min-width: 250px;
-    }
-
-    .welcome-col h2 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--fg-bright);
-      margin-bottom: 15px;
-    }
-
-    .welcome-list {
-      list-style: none;
-      margin-bottom: 30px;
-    }
-
-    .welcome-list li {
-      display: flex;
-      align-items: center;
-      padding: 6px 0;
-      font-size: 13px;
-      color: var(--accent-light);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .welcome-list li:hover {
-      text-decoration: underline;
-    }
-
-    .welcome-list li svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-      margin-right: 10px;
-    }
-
-    .recent-item {
-      display: flex;
-      align-items: baseline;
-      padding: 6px 0;
-      cursor: pointer;
-    }
-
-    .recent-item:hover .project-name {
-      text-decoration: underline;
-      color: var(--accent-light);
-    }
-
-    .project-name {
-      font-size: 13px;
-      color: var(--fg-main);
-      font-weight: 600;
-      margin-right: 10px;
-    }
-
-    .project-path {
-      font-size: 11px;
-      color: var(--fg-sub);
-    }
-
-    .walkthrough-card {
-      background: var(--bg-side);
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: var(--transition);
-    }
-
-    .walkthrough-card:hover {
-      border-color: var(--border);
-      background: var(--bg-hover);
-    }
-
-    .walkthrough-card h3 {
-      font-size: 13px;
-      color: var(--accent-light);
-      margin-bottom: 5px;
-    }
-
-    .walkthrough-card p {
-      font-size: 12px;
-      color: var(--fg-sub);
-    }
-
-    /* CODE EDITOR */
+    /* TEXT EDITOR (PURE HTML/CSS) */
+    .editor-wrapper { display: flex; width: 100%; height: 100%; }
     .line-numbers {
-      width: 50px;
-      padding: 20px 0;
-      background: var(--bg-dark);
-      color: #858585;
-      text-align: right;
-      font-family: var(--font-code);
-      font-size: 14px;
-      line-height: 1.6;
-      border-right: 1px solid var(--border);
-      user-select: none;
-      padding-right: 15px;
+      width: 50px; padding: 20px 0; background: var(--bg-dark); color: #858585; text-align: right;
+      font-family: var(--font-code); font-size: 14px; line-height: 1.6; border-right: 1px solid var(--border); padding-right: 15px;
     }
-
-    .code-editor {
-      flex: 1;
-      padding: 20px;
-      font-family: var(--font-code);
-      font-size: 14px;
-      line-height: 1.6;
-      color: #d4d4d4;
-      white-space: pre;
-      overflow: auto;
-      outline: none;
-      tab-size: 4;
-      caret-color: white;
-    }
-
-    /* PANEL */
-    .panel {
-      height: 250px;
-      background: var(--bg-panel);
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      position: relative;
-      transition: height 0.3s ease;
-    }
-
-    .panel.collapsed {
-      height: 0;
-      border-top: none;
-    }
-
-    .panel-header {
-      height: 35px;
-      display: flex;
-      align-items: center;
-      padding: 0 15px;
-      gap: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--fg-sub);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .panel-tab {
-      cursor: pointer;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid transparent;
-      transition: var(--transition);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .panel-tab.active {
-      color: var(--fg-bright);
-      border-bottom-color: var(--accent-light);
-    }
-
-    .terminal-output {
-      flex: 1;
-      padding: 12px 20px;
-      font-family: var(--font-code);
-      font-size: 13px;
-      overflow-y: auto;
-      color: var(--fg-main);
-      background: var(--bg-darker);
+    .code-textarea {
+      flex: 1; padding: 20px; font-family: var(--font-code); font-size: 14px; line-height: 1.6;
+      color: #d4d4d4; background: transparent; border: none; outline: none; resize: none; white-space: pre; tab-size: 4;
     }
 
     /* STATUS BAR */
     .status-bar {
-      height: 22px;
-      background: var(--accent);
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 12px;
-      user-select: none;
-      flex-shrink: 0;
-      z-index: 100;
+      height: 22px; background: var(--accent); color: white; display: flex; justify-content: space-between;
+      align-items: center; padding: 0 12px; font-size: 12px; user-select: none; flex-shrink: 0; z-index: 100;
+    }
+    .status-left, .status-right { display: flex; align-items: center; gap: 15px; }
+    .status-item { display: flex; align-items: center; gap: 5px; cursor: pointer; height: 100%; padding: 0 6px; }
+    .status-item:hover { background: rgba(255,255,255,0.2); }
+    .status-item svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* 
+    ========================================
+    CSS LOGIC (THE MAGIC)
+    ========================================
+    */
+
+    /* Sidebar Views Logic */
+    #view-explorer:checked ~ .workbench .activity-bar label[for="view-explorer"],
+    #view-search:checked ~ .workbench .activity-bar label[for="view-search"],
+    #view-scm:checked ~ .workbench .activity-bar label[for="view-scm"],
+    #view-extensions:checked ~ .workbench .activity-bar label[for="view-extensions"] {
+      color: var(--fg-bright);
     }
 
-    .status-left, .status-right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .status-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      height: 100%;
-      padding: 0 6px;
-      transition: var(--transition);
-    }
-
-    .status-item:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    .status-item svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-    }
-
-    /* SYNTAX HIGHLIGHTING COLORS */
-    .hl-keyword { color: #569cd6; }
-    .hl-string { color: #ce9178; }
-    .hl-comment { color: #6a9955; }
-    .hl-func { color: #dcdcaa; }
-    .hl-var { color: #9cdcfe; }
-    .hl-tag { color: #569cd6; }
-    .hl-attr { color: #9cdcfe; }
-    .hl-number { color: #b5cea8; }
-
-    /* RESPONSIVE */
-    @media (max-width: 800px) {
-      .sidebar {
-        position: absolute;
-        left: 48px;
-        top: 0;
-        bottom: 0;
-        z-index: 50;
-        box-shadow: var(--shadow-lg);
-        background: rgba(37, 37, 38, 0.95);
-        backdrop-filter: blur(10px);
-      }
-      
-      .global-search {
-        display: none;
-      }
-      
-      .menu-bar {
-        display: none;
-      }
-    }
-
-    /* UTILITIES */
-    .resizer-x {
-      width: 4px;
-      background: transparent;
-      cursor: ew-resize;
-      position: absolute;
-      right: -2px;
-      top: 0;
-      bottom: 0;
-      z-index: 20;
-    }
-
-    .resizer-x:hover, .resizing-x {
+    #view-explorer:checked ~ .workbench .activity-bar label[for="view-explorer"]::before,
+    #view-search:checked ~ .workbench .activity-bar label[for="view-search"]::before,
+    #view-scm:checked ~ .workbench .activity-bar label[for="view-scm"]::before,
+    #view-extensions:checked ~ .workbench .activity-bar label[for="view-extensions"]::before {
       background: var(--accent-light);
     }
 
-    .resizer-y {
-      height: 4px;
-      background: transparent;
-      cursor: ns-resize;
-      position: absolute;
-      top: -2px;
-      left: 0;
-      right: 0;
-      z-index: 20;
-    }
+    #view-explorer:checked ~ .workbench .sidebar .sec-explorer { display: block; }
+    #view-search:checked ~ .workbench .sidebar .sec-search { display: block; }
+    #view-scm:checked ~ .workbench .sidebar .sec-scm { display: block; }
+    #view-extensions:checked ~ .workbench .sidebar .sec-extensions { display: block; }
 
-    .resizer-y:hover, .resizing-y {
+    /* Tabs Logic */
+    #tab-welcome:checked ~ .workbench .tabs-container label[for="tab-welcome"],
+    #tab-index:checked ~ .workbench .tabs-container label[for="tab-index"],
+    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"] {
+      background: var(--bg-dark); color: var(--fg-bright);
+    }
+    #tab-welcome:checked ~ .workbench .tabs-container label[for="tab-welcome"]::after,
+    #tab-index:checked ~ .workbench .tabs-container label[for="tab-index"]::after,
+    #tab-style:checked ~ .workbench .tabs-container label[for="tab-style"]::after {
       background: var(--accent-light);
     }
 
-    #new-file-input {
-      background: var(--bg-darker);
-      border: 1px solid var(--accent);
-      color: white;
-      padding: 4px 10px;
-      font-size: 13px;
-      width: 90%;
-      margin: 8px 5%;
-      border-radius: 4px;
-      outline: none;
-      display: none;
-    }
+    #tab-welcome:checked ~ .workbench .view-welcome { display: flex; }
+    #tab-index:checked ~ .workbench .view-index { display: flex; }
+    #tab-style:checked ~ .workbench .view-style { display: flex; }
 
-    .premium-card {
-      background: var(--bg-hover);
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px;
-      border: 1px solid var(--border);
-    }
+    /* Status Bar Language Logic */
+    #tab-welcome:checked ~ .status-bar .lang-status::after { content: "Plain Text"; }
+    #tab-index:checked ~ .status-bar .lang-status::after { content: "HTML"; }
+    #tab-style:checked ~ .status-bar .lang-status::after { content: "CSS"; }
+
   </style>
 </head>
 <body>
+
+  <!-- PURE HTML STATE INPUTS -->
+  <!-- Sidebar State -->
+  <input type="radio" name="sidebar" id="view-explorer" checked>
+  <input type="radio" name="sidebar" id="view-search">
+  <input type="radio" name="sidebar" id="view-scm">
+  <input type="radio" name="sidebar" id="view-extensions">
+
+  <!-- Tab State -->
+  <input type="radio" name="tabs" id="tab-welcome" checked>
+  <input type="radio" name="tabs" id="tab-index">
+  <input type="radio" name="tabs" id="tab-style">
 
   <!-- TOP TITLE BAR -->
   <div class="title-bar">
@@ -755,7 +265,7 @@
     <div class="title-bar-center">
       <div class="global-search">
         <svg viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
-        Visual Studio Code Pro - Search Files (Ctrl+P)
+        Visual Studio Code Pro - Search Files
       </div>
     </div>
     <div class="title-bar-right">
@@ -771,83 +281,65 @@
     <!-- ACTIVITY BAR -->
     <div class="activity-bar">
       <div class="action-icons">
-        <div class="action-btn active" data-view="explorer" title="Explorer (Ctrl+Shift+E)">
+        <label for="view-explorer" class="action-label" title="Explorer">
           <svg viewBox="0 0 24 24"><path d="M3 3h12l6 6v12H3V3zm13 1.5l4.5 4.5H16V4.5zM4 4v16h16V10h-5V4H4z"/></svg>
-        </div>
-        <div class="action-btn" data-view="search" title="Search (Ctrl+Shift+F)">
+        </label>
+        <label for="view-search" class="action-label" title="Search">
           <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        </div>
-        <div class="action-btn" data-view="scm" title="Source Control (Ctrl+Shift+G)">
+        </label>
+        <label for="view-scm" class="action-label" title="Source Control">
           <svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="17" r="3"/><path d="M7 10v4M10 17h4M14 17l-4-4V7" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-        </div>
-        <div class="action-btn" data-view="extensions" title="Extensions (Ctrl+Shift+X)">
+        </label>
+        <label for="view-extensions" class="action-label" title="Extensions">
           <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/></svg>
-        </div>
+        </label>
       </div>
       <div class="action-icons">
-        <div class="action-btn" title="Accounts">
+        <div class="action-label" title="Accounts">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
         </div>
-        <div class="action-btn" title="Settings">
+        <div class="action-label" title="Settings">
           <svg viewBox="0 0 24 24"><path d="M19.4 13c.1-.6.1-1.3 0-1.9l2.2-1.7-2.1-3.6-2.6 1c-.8-.6-1.7-1.1-2.6-1.4l-.4-2.8h-4.2l-.4 2.8c-.9.3-1.8.8-2.6 1.4l-2.6-1-2.1 3.6 2.2 1.7c-.1.6-.1 1.3 0 1.9l-2.2 1.7 2.1 3.6 2.6-1c.8.6 1.7 1.1 2.6 1.4l.4 2.8h4.2l.4-2.8c.9-.3 1.8-.8 2.6-1.4l2.6 1 2.1-3.6-2.2-1.7zM12 15.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>
         </div>
       </div>
     </div>
 
     <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-      <div class="resizer-x" id="sidebar-resizer"></div>
+    <div class="sidebar">
       <div class="sidebar-header">
-        <span id="sidebar-title">Explorer</span>
-        <div style="display: flex; gap: 8px;">
-          <svg style="width: 16px; height: 16px; fill: currentColor; cursor: pointer;" title="New File" onclick="promptNewFile()" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zM9 1v3.5l3.5.5V4.5zM4 1h4v4h4v9H4V1z"/></svg>
-          <svg style="width: 16px; height: 16px; fill: currentColor; cursor: pointer;" title="Refresh" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1zM8 4.4a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 1-.5.5H5.5a.5.5 0 0 1 0-1H7.5V4.9a.5.5 0 0 1 .5-.5z"/></svg>
-        </div>
+        <span>Explorer</span>
       </div>
-      
-      <input type="text" id="new-file-input" placeholder="filename.extension">
-
       <div class="sidebar-content">
         <!-- EXPLORER -->
-        <div class="sidebar-section active" id="view-explorer">
-          <div class="tree-item folder" onclick="toggleFolder(this)">
-            <svg class="folder-arrow" viewBox="0 0 16 16"><path d="M12.146 4.646l-4.5 4.5-4.5-4.5L2.5 5.354l5 5 5-5z"/></svg>
+        <div class="sidebar-section sec-explorer">
+          <div class="tree-item folder">
             <span style="color: #61afef; margin-right: 6px;">📦</span> VS-PROJECT
           </div>
-          <div id="file-tree" style="padding-left: 12px;">
-            <!-- Dynamic File Tree -->
+          <div style="padding-left: 12px;">
+            <label for="tab-index" class="tree-item">
+              <span class="item-icon">🌐</span> index.html
+            </label>
+            <label for="tab-style" class="tree-item">
+              <span class="item-icon">🎨</span> style.css
+            </label>
           </div>
         </div>
 
         <!-- SEARCH -->
-        <div class="sidebar-section" id="view-search" style="padding: 15px;">
-          <input type="text" class="global-search" id="local-search" style="width: 100%; display: block; margin-bottom: 12px; padding: 6px 10px; background: var(--bg-darker);" placeholder="Search text in project...">
-          <div id="search-results" style="font-size: 12px; color: var(--fg-sub);">
-            Enter keywords to search across files.
-          </div>
+        <div class="sidebar-section sec-search" style="padding: 15px;">
+          <input type="text" class="global-search" style="width: 100%; display: block; margin-bottom: 12px; padding: 6px 10px;" placeholder="Search text in project...">
+          <div style="font-size: 12px; color: var(--fg-sub);">Search results will appear here.</div>
         </div>
         
         <!-- SCM -->
-        <div class="sidebar-section" id="view-scm" style="padding: 15px;">
-           <div style="font-size: 11px; margin-bottom: 12px; font-weight: 600;">SOURCE CONTROL: GIT</div>
-           <div class="premium-card" style="margin: 0 0 15px 0;">
-             <textarea id="scm-msg" style="width: 100%; background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 4px; resize: none; font-family: inherit;" rows="3" placeholder="Message (Enter to commit)"></textarea>
-             <button style="width: 100%; background: var(--accent); color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 4px; cursor: pointer; font-weight: 600;">Commit & Push</button>
-           </div>
-           <div id="scm-changes"></div>
+        <div class="sidebar-section sec-scm" style="padding: 15px;">
+           <div style="font-size: 11px; margin-bottom: 12px; font-weight: 600;">SOURCE CONTROL</div>
+           <div style="font-size: 12px; color: var(--fg-sub);">No active changes.</div>
         </div>
 
         <!-- EXTENSIONS -->
-        <div class="sidebar-section" id="view-extensions" style="padding: 10px;">
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div class="premium-card" style="margin: 0; display: flex; gap: 12px; align-items: center; cursor: pointer;">
-              <div style="width: 42px; height: 42px; background: #e34f26; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900;">HT</div>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">HTML Boilerplate</div>
-                <div style="font-size: 11px; color: var(--fg-sub);">Microsoft • 24.1M installs</div>
-              </div>
-            </div>
-          </div>
+        <div class="sidebar-section sec-extensions" style="padding: 10px;">
+          <div style="font-size: 12px; color: var(--fg-sub); padding: 5px;">Installed Extensions</div>
         </div>
       </div>
     </div>
@@ -855,12 +347,21 @@
     <!-- MAIN EDITOR GROUP -->
     <div class="editor-group">
       <!-- TABS -->
-      <div class="tabs-container" id="tabs-bar">
-        <!-- Dynamic Tabs -->
+      <div class="tabs-container">
+        <label for="tab-welcome" class="tab-label">
+          <svg class="tab-icon" viewBox="0 0 24 24" style="fill:var(--accent-light);"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>
+          Welcome
+        </label>
+        <label for="tab-index" class="tab-label">
+          <span class="tab-icon">🌐</span> index.html
+        </label>
+        <label for="tab-style" class="tab-label">
+          <span class="tab-icon">🎨</span> style.css
+        </label>
       </div>
 
       <!-- VIEW: WELCOME SCREEN -->
-      <div class="view-content active" id="view-welcome">
+      <div class="view-content view-welcome">
         <div class="welcome-page">
           <div class="welcome-header">
             <h1>Visual Studio Code</h1>
@@ -870,75 +371,66 @@
             <div class="welcome-col">
               <h2>Start</h2>
               <ul class="welcome-list">
-                <li onclick="promptNewFile()">
-                  <svg viewBox="0 0 16 16"><path d="M13.5 2h-11v12h11V2zM12 13H4V3h8v10zM7 5H5v1h2V5zm3 0H8v1h2V5zm-3 2H5v1h2V7zm3 0H8v1h2V7zm-3 2H5v1h2V9zm3 0H8v1h2V9zm-3 2H5v1h2v-1zm3 0H8v1h2v-1z"/></svg> 
-                  New File...
-                </li>
-                <li>
-                  <svg viewBox="0 0 16 16"><path d="M1 3.5l1-1h4.5l1.5 1.5h6l1 1v7.5l-1 1h-13l-1-1v-9zm1 .5v8h12v-7H7.5L6 3.5H2z"/></svg> 
-                  Open File...
-                </li>
-                <li>
-                  <svg viewBox="0 0 16 16"><path d="M14 4H7.5L6 2.5H1v11h13V4z"/></svg> 
-                  Open Folder...
-                </li>
-                <li>
-                  <svg viewBox="0 0 16 16"><path d="M5.5 2a2.5 2.5 0 1 0 .5 4.95V9.5A1.5 1.5 0 0 0 7.5 11h3.05a2.5 2.5 0 1 0 0-1H7.5a.5.5 0 0 1-.5-.5V6.95a2.5 2.5 0 1 0-1.5 0z"/></svg> 
-                  Clone Git Repository...
-                </li>
+                <li><svg viewBox="0 0 16 16"><path d="M13.5 2h-11v12h11V2zM12 13H4V3h8v10zM7 5H5v1h2V5zm3 0H8v1h2V5zm-3 2H5v1h2V7zm3 0H8v1h2V7zm-3 2H5v1h2V9zm3 0H8v1h2V9zm-3 2H5v1h2v-1zm3 0H8v1h2v-1z"/></svg> New File...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M1 3.5l1-1h4.5l1.5 1.5h6l1 1v7.5l-1 1h-13l-1-1v-9zm1 .5v8h12v-7H7.5L6 3.5H2z"/></svg> Open File...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M14 4H7.5L6 2.5H1v11h13V4z"/></svg> Open Folder...</li>
+                <li><svg viewBox="0 0 16 16"><path d="M5.5 2a2.5 2.5 0 1 0 .5 4.95V9.5A1.5 1.5 0 0 0 7.5 11h3.05a2.5 2.5 0 1 0 0-1H7.5a.5.5 0 0 1-.5-.5V6.95a2.5 2.5 0 1 0-1.5 0z"/></svg> Clone Git Repository...</li>
               </ul>
               
               <h2>Recent</h2>
-              <div class="recent-item" onclick="openFile('index.html')">
-                <span class="project-name">index.html</span>
-                <span class="project-path">C:\Users\MARO\front end project feranmi v00.01</span>
-              </div>
-              <div class="recent-item" onclick="openFile('style.css')">
-                <span class="project-name">style.css</span>
-                <span class="project-path">C:\Users\MARO\front end project feranmi v00.01</span>
-              </div>
+              <label for="tab-index" style="display:block; padding: 6px 0; cursor: pointer;">
+                <span style="font-size:13px; font-weight:600; color:var(--fg-main); margin-right:10px;">index.html</span>
+                <span style="font-size:11px; color:var(--fg-sub);">C:\Project</span>
+              </label>
+              <label for="tab-style" style="display:block; padding: 6px 0; cursor: pointer;">
+                <span style="font-size:13px; font-weight:600; color:var(--fg-main); margin-right:10px;">style.css</span>
+                <span style="font-size:11px; color:var(--fg-sub);">C:\Project</span>
+              </label>
             </div>
             
             <div class="welcome-col">
               <h2>Walkthroughs</h2>
-              <div class="walkthrough-card">
-                <h3>Get Started with VS Code</h3>
-                <p>Discover the best features to boost your productivity.</p>
-              </div>
-              <div class="walkthrough-card">
-                <h3>Learn the Fundamentals</h3>
-                <p>Jump right into the editor and start writing code.</p>
+              <div style="background:var(--bg-side); padding:15px; border-radius:6px; margin-bottom:15px; border:1px solid transparent;">
+                <h3 style="font-size:13px; color:var(--accent-light); margin-bottom:5px;">Get Started with VS Code</h3>
+                <p style="font-size:12px; color:var(--fg-sub);">Discover the best features to boost your productivity.</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW: EDITOR -->
-      <div class="view-content" id="view-editor">
-        <div class="line-numbers" id="line-nums"></div>
-        <div class="code-editor" id="code-content" contenteditable="true" spellcheck="false" oninput="handleEditorInput()" onkeydown="handleEditorKeyDown(event)"></div>
+      <!-- VIEW: EDITOR (INDEX.HTML) -->
+      <div class="view-content view-index">
+        <div class="editor-wrapper">
+          <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+          </div>
+          <textarea class="code-textarea" spellcheck="false" placeholder="Type your HTML code here..."><!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+</html></textarea>
+        </div>
       </div>
 
-      <!-- BOTTOM PANEL -->
-      <div class="panel" id="bottom-panel">
-        <div class="resizer-y" id="panel-resizer"></div>
-        <div class="panel-header">
-          <div class="panel-tab active">PROBLEMS</div>
-          <div class="panel-tab">OUTPUT</div>
-          <div class="panel-tab">DEBUG CONSOLE</div>
-          <div class="panel-tab">TERMINAL</div>
-          <div style="margin-left: auto; cursor: pointer;" onclick="togglePanel()"><svg width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg></div>
-        </div>
-        <div class="terminal-output" id="terminal-content">
-          <div style="color: var(--success); font-weight: 700;">➜ VS Code Web Environment [READY]</div>
-          <div style="color: var(--fg-sub);">* Use the sidebar to manage files and search.</div>
-          <br>
-          <div id="terminal-cursor"><span style="color: var(--accent-light); font-weight: 700;">C:\Users\MARO\project></span> <span id="typing-sim"></span></div>
+      <!-- VIEW: EDITOR (STYLE.CSS) -->
+      <div class="view-content view-style">
+        <div class="editor-wrapper">
+          <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div>
+          </div>
+          <textarea class="code-textarea" spellcheck="false" placeholder="Type your CSS code here...">body {
+  background-color: #000;
+  color: #fff;
+}</textarea>
         </div>
       </div>
+
     </div>
-
   </div>
 
   <!-- BOTTOM STATUS BAR -->
@@ -947,352 +439,17 @@
       <div class="status-item" style="background: rgba(255,255,255,0.15); font-weight: 700;">
         <svg viewBox="0 0 16 16"><path d="M5.5 4l-4 4 4 4 1-1-3-3 3-3-1-1zM10.5 4l1 1-3 3 3 3-1 1 4-4-4-4z"/></svg> main*
       </div>
-      <div class="status-item" title="No errors found">
+      <div class="status-item">
         <svg viewBox="0 0 16 16"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0zm4.146-2.146a.5.5 0 0 1 .708 0L8 7.293l1.646-1.647a.5.5 0 0 1 .708.708L8.707 8l1.647 1.646a.5.5 0 0 1-.708.708L8 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L7.293 8 5.646 6.354a.5.5 0 0 1 0-.708z"/></svg> 0
         <svg viewBox="0 0 16 16"><path d="M7.56 1.25a.5.5 0 0 1 .88 0l6.5 11.5a.5.5 0 0 1-.44.75H1.5a.5.5 0 0 1-.44-.75l6.5-11.5zM8 12.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm-.5-5v3h1v-3h-1z"/></svg> 0
       </div>
     </div>
     <div class="status-right">
-      <div class="status-item" id="cursor-pos">Ln 1, Col 1</div>
-      <div class="status-item">Spaces: 4</div>
       <div class="status-item">UTF-8</div>
-      <div class="status-item" id="file-lang">Plain Text</div>
+      <div class="status-item lang-status"></div>
       <div class="status-item" style="color: var(--success);"><svg viewBox="0 0 16 16"><path d="M8 1.5a3.5 3.5 0 0 0-3.5 3.5V8L3.146 9.354a.5.5 0 0 0 .354.854h9a.5.5 0 0 0 .354-.854L11.5 8V5A3.5 3.5 0 0 0 8 1.5zM6 11.5v.5a2 2 0 1 0 4 0v-.5H6z"/></svg></div>
     </div>
   </div>
 
-  <script>
-    /* 
-    ========================================
-    STATE MANAGEMENT
-    ========================================
-    */
-    const state = {
-      files: {
-        'index.html': { 
-          lang: 'html', 
-          content: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>VS Clone</title>\n</head>\n<body>\n  <div id="app">Hello World</div>\n</body>\n</html>' 
-        },
-        'style.css': { 
-          lang: 'css', 
-          content: ':root {\n  --primary: #007acc;\n}\n\nbody {\n  background: #1e1e1e;\n  color: white;\n  margin: 0;\n}\n\n#app {\n  display: flex;\n  justify-content: center;\n}' 
-        },
-        'script.js': { 
-          lang: 'js', 
-          content: 'function initApp() {\n  const app = document.getElementById("app");\n  app.innerHTML = "App Initialized!";\n  console.log("Ready.");\n}\n\nwindow.onload = initApp;' 
-        }
-      },
-      // Start EXACTLY like VS Code: Only the Welcome tab is open
-      openTabs: ['Welcome'],
-      activeFile: 'Welcome',
-      isSidebarOpen: true,
-      activeSidebarView: 'explorer',
-      isPanelOpen: true,
-      modifiedFiles: new Set()
-    };
-
-    const dom = {
-      explorer: document.getElementById('file-tree'),
-      tabs: document.getElementById('tabs-bar'),
-      code: document.getElementById('code-content'),
-      lineNums: document.getElementById('line-nums'),
-      sidebar: document.getElementById('sidebar'),
-      langStatus: document.getElementById('file-lang'),
-      cursorStatus: document.getElementById('cursor-pos'),
-      newFileInput: document.getElementById('new-file-input'),
-      panel: document.getElementById('bottom-panel'),
-      viewEditor: document.getElementById('view-editor'),
-      viewWelcome: document.getElementById('view-welcome')
-    };
-
-    /* 
-    ========================================
-    INITIALIZATION
-    ========================================
-    */
-    function init() {
-      renderExplorer();
-      renderTabs();
-      updateView();
-      setupResizers();
-      setupSidebarViews();
-    }
-
-    /* 
-    ========================================
-    RENDERERS
-    ========================================
-    */
-    function renderExplorer() {
-      dom.explorer.innerHTML = '';
-      Object.keys(state.files).sort().forEach(filename => {
-        const item = document.createElement('div');
-        item.className = `tree-item ${state.activeFile === filename ? 'active' : ''}`;
-        item.innerHTML = `
-          <span class="item-icon">${getFileIcon(filename)}</span>
-          ${filename}
-        `;
-        item.onclick = () => openFile(filename);
-        dom.explorer.appendChild(item);
-      });
-    }
-
-    function renderTabs() {
-      dom.tabs.innerHTML = '';
-      state.openTabs.forEach(filename => {
-        const tab = document.createElement('div');
-        const isModified = state.modifiedFiles.has(filename);
-        tab.className = `tab ${state.activeFile === filename ? 'active' : ''}`;
-        
-        let icon = '';
-        if (filename === 'Welcome') {
-          icon = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--accent-light);"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>';
-        } else {
-          icon = getFileIcon(filename);
-        }
-
-        tab.innerHTML = `
-          <span style="margin-right: 8px; font-size: 14px; display:flex;">${icon}</span>
-          <span style="${isModified ? 'font-style: italic;' : ''}">${filename}${isModified ? '*' : ''}</span>
-          <div class="tab-close" onclick="closeTab('${filename}', event)">
-            <svg viewBox="0 0 16 16"><path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg>
-          </div>
-        `;
-        tab.onclick = () => openFile(filename);
-        dom.tabs.appendChild(tab);
-      });
-    }
-
-    function updateView() {
-      if (!state.activeFile) {
-        dom.viewWelcome.classList.remove('active');
-        dom.viewEditor.classList.remove('active');
-        dom.langStatus.innerText = 'Plain Text';
-        return;
-      }
-
-      if (state.activeFile === 'Welcome') {
-        dom.viewWelcome.classList.add('active');
-        dom.viewEditor.classList.remove('active');
-        dom.langStatus.innerText = 'Plain Text';
-        dom.cursorStatus.innerText = '';
-      } else {
-        dom.viewWelcome.classList.remove('active');
-        dom.viewEditor.classList.add('active');
-        
-        const file = state.files[state.activeFile];
-        dom.code.innerText = file.content;
-        dom.langStatus.innerText = getLangName(file.lang);
-        updateLineNumbers();
-        dom.cursorStatus.innerText = `Ln 1, Col 1`;
-      }
-    }
-
-    /* 
-    ========================================
-    FILE OPERATIONS
-    ========================================
-    */
-    function openFile(filename) {
-      if (!state.openTabs.includes(filename)) {
-        state.openTabs.push(filename);
-      }
-      state.activeFile = filename;
-      
-      updateView();
-      renderTabs();
-      renderExplorer();
-    }
-
-    function closeTab(filename, e) {
-      e.stopPropagation();
-      state.openTabs = state.openTabs.filter(t => t !== filename);
-      if (state.activeFile === filename) {
-        state.activeFile = state.openTabs[state.openTabs.length - 1] || null;
-      }
-      
-      updateView();
-      renderTabs();
-      renderExplorer();
-    }
-
-    function promptNewFile() {
-      dom.newFileInput.style.display = 'block';
-      dom.newFileInput.focus();
-    }
-
-    dom.newFileInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const name = dom.newFileInput.value.trim();
-        if (name && !state.files[name]) {
-          const ext = name.split('.').pop();
-          state.files[name] = { lang: ext, content: '' };
-          dom.newFileInput.style.display = 'none';
-          dom.newFileInput.value = '';
-          openFile(name);
-        }
-      } else if (e.key === 'Escape') {
-        dom.newFileInput.style.display = 'none';
-      }
-    });
-
-    /* 
-    ========================================
-    EDITOR LOGIC
-    ========================================
-    */
-    function handleEditorInput() {
-      if (!state.activeFile || state.activeFile === 'Welcome') return;
-      
-      const content = dom.code.innerText;
-      state.files[state.activeFile].content = content;
-      state.modifiedFiles.add(state.activeFile);
-      
-      updateLineNumbers();
-      renderTabs(); 
-    }
-
-    function handleEditorKeyDown(e) {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        const tabNode = document.createTextNode('    ');
-        range.insertNode(tabNode);
-        range.setStartAfter(tabNode);
-        range.setEndAfter(tabNode);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        handleEditorInput();
-      }
-    }
-
-    function updateLineNumbers() {
-      const text = dom.code.innerText;
-      const lines = text.split('\n').length || 1;
-      let html = '';
-      for (let i = 1; i <= lines; i++) {
-        html += `<div>${i}</div>`;
-      }
-      dom.lineNums.innerHTML = html;
-    }
-
-    /* 
-    ========================================
-    UI INTERACTIONS
-    ========================================
-    */
-    function setupSidebarViews() {
-      document.querySelectorAll('.action-btn[data-view]').forEach(btn => {
-        btn.onclick = () => {
-          const view = btn.getAttribute('data-view');
-          
-          if (state.activeSidebarView === view && state.isSidebarOpen) {
-            dom.sidebar.classList.add('collapsed');
-            state.isSidebarOpen = false;
-            btn.classList.remove('active');
-          } else {
-            dom.sidebar.classList.remove('collapsed');
-            state.isSidebarOpen = true;
-            document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            document.querySelectorAll('.sidebar-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`view-${view}`).classList.add('active');
-            
-            const titles = {
-              'explorer': 'Explorer',
-              'search': 'Search',
-              'scm': 'Source Control',
-              'extensions': 'Extensions'
-            };
-            document.getElementById('sidebar-title').innerText = titles[view].toUpperCase();
-            state.activeSidebarView = view;
-          }
-        };
-      });
-    }
-
-    function setupResizers() {
-      const sidebarResizer = document.getElementById('sidebar-resizer');
-      const panelResizer = document.getElementById('panel-resizer');
-
-      // Sidebar X-Resizer
-      sidebarResizer.onmousedown = (e) => {
-        document.body.classList.add('resizing-x');
-        const startX = e.clientX;
-        const startWidth = dom.sidebar.offsetWidth;
-
-        const onMouseMove = (moveEvent) => {
-          const newWidth = startWidth + (moveEvent.clientX - startX);
-          if (newWidth > 150 && newWidth < 600) {
-            dom.sidebar.style.width = `${newWidth}px`;
-          }
-        };
-
-        const onMouseUp = () => {
-          document.body.classList.remove('resizing-x');
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      };
-
-      // Panel Y-Resizer
-      panelResizer.onmousedown = (e) => {
-        document.body.classList.add('resizing-y');
-        const startY = e.clientY;
-        const startHeight = dom.panel.offsetHeight;
-
-        const onMouseMove = (moveEvent) => {
-          const newHeight = startHeight + (startY - moveEvent.clientY);
-          if (newHeight > 50 && newHeight < 600) {
-            dom.panel.style.height = `${newHeight}px`;
-          }
-        };
-
-        const onMouseUp = () => {
-          document.body.classList.remove('resizing-y');
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      };
-    }
-
-    function togglePanel() {
-      state.isPanelOpen = !state.isPanelOpen;
-      dom.panel.classList.toggle('collapsed');
-    }
-
-    function toggleFolder(el) {
-      el.classList.toggle('collapsed');
-      dom.explorer.style.display = el.classList.contains('collapsed') ? 'none' : 'block';
-    }
-
-    /* 
-    ========================================
-    HELPERS
-    ========================================
-    */
-    function getFileIcon(name) {
-      if (name.endsWith('.html')) return '🌐';
-      if (name.endsWith('.css')) return '🎨';
-      if (name.endsWith('.js')) return '📜';
-      return '📄';
-    }
-
-    function getLangName(ext) {
-      const map = { html: 'HTML', css: 'CSS', js: 'JavaScript' };
-      return map[ext] || 'Plain Text';
-    }
-
-    // Start the app
-    init();
-  </script>
 </body>
 </html>
