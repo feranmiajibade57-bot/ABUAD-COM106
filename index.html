@@ -399,15 +399,134 @@
       fill: currentColor;
     }
 
-    /* EDITOR CONTENT */
-    .editor-view {
+    /* CONTENT VIEWS (Editor vs Welcome) */
+    .view-content {
       flex: 1;
-      display: flex;
+      display: none;
       overflow: hidden;
       position: relative;
       background: var(--bg-dark);
     }
 
+    .view-content.active {
+      display: flex;
+    }
+
+    /* WELCOME SCREEN */
+    .welcome-page {
+      flex-direction: column;
+      padding: 50px 10%;
+      overflow-y: auto;
+    }
+
+    .welcome-header h1 {
+      font-size: 36px;
+      font-weight: 300;
+      margin-bottom: 5px;
+      color: var(--fg-bright);
+    }
+
+    .welcome-header p {
+      font-size: 16px;
+      color: var(--fg-sub);
+      margin-bottom: 40px;
+    }
+
+    .welcome-columns {
+      display: flex;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .welcome-col {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .welcome-col h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg-bright);
+      margin-bottom: 15px;
+    }
+
+    .welcome-list {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .welcome-list li {
+      display: flex;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--accent-light);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .welcome-list li:hover {
+      text-decoration: underline;
+    }
+
+    .welcome-list li svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      margin-right: 10px;
+    }
+
+    .recent-item {
+      display: flex;
+      align-items: baseline;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    .recent-item:hover .project-name {
+      text-decoration: underline;
+      color: var(--accent-light);
+    }
+
+    .project-name {
+      font-size: 13px;
+      color: var(--fg-main);
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .project-path {
+      font-size: 11px;
+      color: var(--fg-sub);
+    }
+
+    .walkthrough-card {
+      background: var(--bg-side);
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+    }
+
+    .walkthrough-card:hover {
+      border-color: var(--border);
+      background: var(--bg-hover);
+    }
+
+    .walkthrough-card h3 {
+      font-size: 13px;
+      color: var(--accent-light);
+      margin-bottom: 5px;
+    }
+
+    .walkthrough-card p {
+      font-size: 12px;
+      color: var(--fg-sub);
+    }
+
+    /* CODE EDITOR */
     .line-numbers {
       width: 50px;
       padding: 20px 0;
@@ -609,12 +728,6 @@
       display: none;
     }
 
-    /* NEW PREMIUM COMPONENTS */
-    .glass-sidebar {
-      background: rgba(37, 37, 38, 0.8) !important;
-      backdrop-filter: blur(15px);
-    }
-
     .premium-card {
       background: var(--bg-hover);
       border-radius: 8px;
@@ -640,7 +753,7 @@
       </div>
     </div>
     <div class="title-bar-center">
-      <div class="global-search" onclick="focusSearch()">
+      <div class="global-search">
         <svg viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
         Visual Studio Code Pro - Search Files (Ctrl+P)
       </div>
@@ -688,7 +801,7 @@
         <span id="sidebar-title">Explorer</span>
         <div style="display: flex; gap: 8px;">
           <svg style="width: 16px; height: 16px; fill: currentColor; cursor: pointer;" title="New File" onclick="promptNewFile()" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zM9 1v3.5l3.5.5V4.5zM4 1h4v4h4v9H4V1z"/></svg>
-          <svg style="width: 16px; height: 16px; fill: currentColor; cursor: pointer;" title="Refresh" onclick="refreshExplorer()" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1zM8 4.4a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 1-.5.5H5.5a.5.5 0 0 1 0-1H7.5V4.9a.5.5 0 0 1 .5-.5z"/></svg>
+          <svg style="width: 16px; height: 16px; fill: currentColor; cursor: pointer;" title="Refresh" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1zM8 4.4a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 1-.5.5H5.5a.5.5 0 0 1 0-1H7.5V4.9a.5.5 0 0 1 .5-.5z"/></svg>
         </div>
       </div>
       
@@ -708,7 +821,7 @@
 
         <!-- SEARCH -->
         <div class="sidebar-section" id="view-search" style="padding: 15px;">
-          <input type="text" class="global-search" id="local-search" style="width: 100%; display: block; margin-bottom: 12px; padding: 6px 10px; background: var(--bg-darker);" placeholder="Search text in project..." oninput="handleSearch()">
+          <input type="text" class="global-search" id="local-search" style="width: 100%; display: block; margin-bottom: 12px; padding: 6px 10px; background: var(--bg-darker);" placeholder="Search text in project...">
           <div id="search-results" style="font-size: 12px; color: var(--fg-sub);">
             Enter keywords to search across files.
           </div>
@@ -719,11 +832,9 @@
            <div style="font-size: 11px; margin-bottom: 12px; font-weight: 600;">SOURCE CONTROL: GIT</div>
            <div class="premium-card" style="margin: 0 0 15px 0;">
              <textarea id="scm-msg" style="width: 100%; background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 4px; resize: none; font-family: inherit;" rows="3" placeholder="Message (Enter to commit)"></textarea>
-             <button onclick="mockCommit()" style="width: 100%; background: var(--accent); color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 4px; cursor: pointer; font-weight: 600;">Commit & Push</button>
+             <button style="width: 100%; background: var(--accent); color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 4px; cursor: pointer; font-weight: 600;">Commit & Push</button>
            </div>
-           <div id="scm-changes">
-             <!-- Modified files shown here -->
-           </div>
+           <div id="scm-changes"></div>
         </div>
 
         <!-- EXTENSIONS -->
@@ -734,13 +845,6 @@
               <div>
                 <div style="font-weight: 600; font-size: 13px;">HTML Boilerplate</div>
                 <div style="font-size: 11px; color: var(--fg-sub);">Microsoft • 24.1M installs</div>
-              </div>
-            </div>
-            <div class="premium-card" style="margin: 0; display: flex; gap: 12px; align-items: center; cursor: pointer;">
-              <div style="width: 42px; height: 42px; background: #007acc; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900;">TS</div>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">TypeScript Tools</div>
-                <div style="font-size: 11px; color: var(--fg-sub);">Microsoft • 15.2M installs</div>
               </div>
             </div>
           </div>
@@ -755,8 +859,63 @@
         <!-- Dynamic Tabs -->
       </div>
 
-      <!-- EDITOR VIEW -->
-      <div class="editor-view">
+      <!-- VIEW: WELCOME SCREEN -->
+      <div class="view-content active" id="view-welcome">
+        <div class="welcome-page">
+          <div class="welcome-header">
+            <h1>Visual Studio Code</h1>
+            <p>Editing evolved</p>
+          </div>
+          <div class="welcome-columns">
+            <div class="welcome-col">
+              <h2>Start</h2>
+              <ul class="welcome-list">
+                <li onclick="promptNewFile()">
+                  <svg viewBox="0 0 16 16"><path d="M13.5 2h-11v12h11V2zM12 13H4V3h8v10zM7 5H5v1h2V5zm3 0H8v1h2V5zm-3 2H5v1h2V7zm3 0H8v1h2V7zm-3 2H5v1h2V9zm3 0H8v1h2V9zm-3 2H5v1h2v-1zm3 0H8v1h2v-1z"/></svg> 
+                  New File...
+                </li>
+                <li>
+                  <svg viewBox="0 0 16 16"><path d="M1 3.5l1-1h4.5l1.5 1.5h6l1 1v7.5l-1 1h-13l-1-1v-9zm1 .5v8h12v-7H7.5L6 3.5H2z"/></svg> 
+                  Open File...
+                </li>
+                <li>
+                  <svg viewBox="0 0 16 16"><path d="M14 4H7.5L6 2.5H1v11h13V4z"/></svg> 
+                  Open Folder...
+                </li>
+                <li>
+                  <svg viewBox="0 0 16 16"><path d="M5.5 2a2.5 2.5 0 1 0 .5 4.95V9.5A1.5 1.5 0 0 0 7.5 11h3.05a2.5 2.5 0 1 0 0-1H7.5a.5.5 0 0 1-.5-.5V6.95a2.5 2.5 0 1 0-1.5 0z"/></svg> 
+                  Clone Git Repository...
+                </li>
+              </ul>
+              
+              <h2>Recent</h2>
+              <div class="recent-item" onclick="openFile('index.html')">
+                <span class="project-name">index.html</span>
+                <span class="project-path">C:\Users\MARO\front end project feranmi v00.01</span>
+              </div>
+              <div class="recent-item" onclick="openFile('style.css')">
+                <span class="project-name">style.css</span>
+                <span class="project-path">C:\Users\MARO\front end project feranmi v00.01</span>
+              </div>
+            </div>
+            
+            <div class="welcome-col">
+              <h2>Walkthroughs</h2>
+              <div class="walkthrough-card">
+                <h3>Get Started with VS Code</h3>
+                <p>Discover the best features to boost your productivity.</p>
+              </div>
+              <div class="walkthrough-card">
+                <h3>Learn the Fundamentals</h3>
+                <p>Jump right into the editor and start writing code.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: EDITOR -->
+      <div class="view-content" id="view-editor">
         <div class="line-numbers" id="line-nums"></div>
         <div class="code-editor" id="code-content" contenteditable="true" spellcheck="false" oninput="handleEditorInput()" onkeydown="handleEditorKeyDown(event)"></div>
       </div>
@@ -765,15 +924,14 @@
       <div class="panel" id="bottom-panel">
         <div class="resizer-y" id="panel-resizer"></div>
         <div class="panel-header">
-          <div class="panel-tab active" onclick="switchPanel('problems')">PROBLEMS</div>
-          <div class="panel-tab" onclick="switchPanel('output')">OUTPUT</div>
-          <div class="panel-tab" onclick="switchPanel('debug')">DEBUG CONSOLE</div>
-          <div class="panel-tab" onclick="switchPanel('terminal')">TERMINAL</div>
+          <div class="panel-tab active">PROBLEMS</div>
+          <div class="panel-tab">OUTPUT</div>
+          <div class="panel-tab">DEBUG CONSOLE</div>
+          <div class="panel-tab">TERMINAL</div>
           <div style="margin-left: auto; cursor: pointer;" onclick="togglePanel()"><svg width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg></div>
         </div>
         <div class="terminal-output" id="terminal-content">
           <div style="color: var(--success); font-weight: 700;">➜ VS Code Web Environment [READY]</div>
-          <div style="color: var(--fg-sub);">* Type code in the editor to see live updates.</div>
           <div style="color: var(--fg-sub);">* Use the sidebar to manage files and search.</div>
           <br>
           <div id="terminal-cursor"><span style="color: var(--accent-light); font-weight: 700;">C:\Users\MARO\project></span> <span id="typing-sim"></span></div>
@@ -824,8 +982,9 @@
           content: 'function initApp() {\n  const app = document.getElementById("app");\n  app.innerHTML = "App Initialized!";\n  console.log("Ready.");\n}\n\nwindow.onload = initApp;' 
         }
       },
-      openTabs: ['index.html', 'style.css'],
-      activeFile: 'index.html',
+      // Start EXACTLY like VS Code: Only the Welcome tab is open
+      openTabs: ['Welcome'],
+      activeFile: 'Welcome',
       isSidebarOpen: true,
       activeSidebarView: 'explorer',
       isPanelOpen: true,
@@ -842,7 +1001,8 @@
       cursorStatus: document.getElementById('cursor-pos'),
       newFileInput: document.getElementById('new-file-input'),
       panel: document.getElementById('bottom-panel'),
-      typingSim: document.getElementById('typing-sim')
+      viewEditor: document.getElementById('view-editor'),
+      viewWelcome: document.getElementById('view-welcome')
     };
 
     /* 
@@ -853,10 +1013,9 @@
     function init() {
       renderExplorer();
       renderTabs();
-      if (state.activeFile) openFile(state.activeFile);
+      updateView();
       setupResizers();
       setupSidebarViews();
-      simulateTerminal();
     }
 
     /* 
@@ -884,8 +1043,16 @@
         const tab = document.createElement('div');
         const isModified = state.modifiedFiles.has(filename);
         tab.className = `tab ${state.activeFile === filename ? 'active' : ''}`;
+        
+        let icon = '';
+        if (filename === 'Welcome') {
+          icon = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--accent-light);"><path d="M17.5 2.5l-9 7.5L5 8.5l-2.5 2 11 9.5 9-7.5-3-3zM2.5 10.5l4-3v6l-4-3zM21.5 10.5l-4-3v6l4-3z"/></svg>';
+        } else {
+          icon = getFileIcon(filename);
+        }
+
         tab.innerHTML = `
-          <span style="margin-right: 8px; font-size: 14px;">${getFileIcon(filename)}</span>
+          <span style="margin-right: 8px; font-size: 14px; display:flex;">${icon}</span>
           <span style="${isModified ? 'font-style: italic;' : ''}">${filename}${isModified ? '*' : ''}</span>
           <div class="tab-close" onclick="closeTab('${filename}', event)">
             <svg viewBox="0 0 16 16"><path d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z"/></svg>
@@ -894,6 +1061,31 @@
         tab.onclick = () => openFile(filename);
         dom.tabs.appendChild(tab);
       });
+    }
+
+    function updateView() {
+      if (!state.activeFile) {
+        dom.viewWelcome.classList.remove('active');
+        dom.viewEditor.classList.remove('active');
+        dom.langStatus.innerText = 'Plain Text';
+        return;
+      }
+
+      if (state.activeFile === 'Welcome') {
+        dom.viewWelcome.classList.add('active');
+        dom.viewEditor.classList.remove('active');
+        dom.langStatus.innerText = 'Plain Text';
+        dom.cursorStatus.innerText = '';
+      } else {
+        dom.viewWelcome.classList.remove('active');
+        dom.viewEditor.classList.add('active');
+        
+        const file = state.files[state.activeFile];
+        dom.code.innerText = file.content;
+        dom.langStatus.innerText = getLangName(file.lang);
+        updateLineNumbers();
+        dom.cursorStatus.innerText = `Ln 1, Col 1`;
+      }
     }
 
     /* 
@@ -907,16 +1099,9 @@
       }
       state.activeFile = filename;
       
-      const file = state.files[filename];
-      dom.code.innerText = file.content;
-      dom.langStatus.innerText = getLangName(file.lang);
-      
-      updateLineNumbers();
+      updateView();
       renderTabs();
       renderExplorer();
-      
-      // Save cursor position
-      dom.cursorStatus.innerText = `Ln 1, Col 1`;
     }
 
     function closeTab(filename, e) {
@@ -926,12 +1111,7 @@
         state.activeFile = state.openTabs[state.openTabs.length - 1] || null;
       }
       
-      if (state.activeFile) openFile(state.activeFile);
-      else {
-        dom.code.innerText = '';
-        dom.lineNums.innerHTML = '';
-        dom.langStatus.innerText = 'Plain Text';
-      }
+      updateView();
       renderTabs();
       renderExplorer();
     }
@@ -962,14 +1142,14 @@
     ========================================
     */
     function handleEditorInput() {
-      if (!state.activeFile) return;
+      if (!state.activeFile || state.activeFile === 'Welcome') return;
       
       const content = dom.code.innerText;
       state.files[state.activeFile].content = content;
       state.modifiedFiles.add(state.activeFile);
       
       updateLineNumbers();
-      renderTabs(); // Show asterisk
+      renderTabs(); 
     }
 
     function handleEditorKeyDown(e) {
@@ -1019,7 +1199,14 @@
             
             document.querySelectorAll('.sidebar-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`view-${view}`).classList.add('active');
-            document.getElementById('sidebar-title').innerText = view.toUpperCase();
+            
+            const titles = {
+              'explorer': 'Explorer',
+              'search': 'Search',
+              'scm': 'Source Control',
+              'extensions': 'Extensions'
+            };
+            document.getElementById('sidebar-title').innerText = titles[view].toUpperCase();
             state.activeSidebarView = view;
           }
         };
@@ -1082,16 +1269,14 @@
       dom.panel.classList.toggle('collapsed');
     }
 
-    function switchPanel(tab) {
-      document.querySelectorAll('.panel-tab').forEach(t => {
-        t.classList.remove('active');
-        if (t.innerText.toLowerCase() === tab) t.classList.add('active');
-      });
+    function toggleFolder(el) {
+      el.classList.toggle('collapsed');
+      dom.explorer.style.display = el.classList.contains('collapsed') ? 'none' : 'block';
     }
 
     /* 
     ========================================
-    HELPERS & SIMULATIONS
+    HELPERS
     ========================================
     */
     function getFileIcon(name) {
@@ -1104,76 +1289,6 @@
     function getLangName(ext) {
       const map = { html: 'HTML', css: 'CSS', js: 'JavaScript' };
       return map[ext] || 'Plain Text';
-    }
-
-    function simulateTerminal() {
-      const lines = [
-        'git status',
-        'On branch main',
-        'Changes not staged for commit:',
-        '  (use "git add <file>..." to update what will be committed)',
-        '  modified:   index.html',
-        '',
-        'npm start'
-      ];
-      
-      let currentLine = 0;
-      let currentChar = 0;
-      const text = "npm run deploy --env=production";
-
-      const interval = setInterval(() => {
-        dom.typingSim.innerText += text[currentChar];
-        currentChar++;
-        if (currentChar >= text.length) {
-          clearInterval(interval);
-          setTimeout(() => {
-            const output = document.createElement('div');
-            output.innerHTML = '<br><span style="color: var(--success);">✔ Build complete!</span><br><span style="color: var(--accent-light);">Deployed to https://vs-clone-pro.web.app</span>';
-            document.getElementById('terminal-content').appendChild(output);
-          }, 500);
-        }
-      }, 80);
-    }
-
-    function handleSearch() {
-      const query = document.getElementById('local-search').value.toLowerCase();
-      const results = document.getElementById('search-results');
-      if (!query) {
-        results.innerText = 'Enter keywords to search across files.';
-        return;
-      }
-      
-      let found = false;
-      results.innerHTML = '';
-      Object.entries(state.files).forEach(([name, file]) => {
-        if (file.content.toLowerCase().includes(query)) {
-          found = true;
-          const div = document.createElement('div');
-          div.className = 'premium-card';
-          div.style.padding = '8px';
-          div.style.cursor = 'pointer';
-          div.innerHTML = `<div style="color: var(--accent-light); font-weight: 600;">${name}</div><div style="font-size: 11px; opacity: 0.7;">Match found in content...</div>`;
-          div.onclick = () => openFile(name);
-          results.appendChild(div);
-        }
-      });
-      
-      if (!found) results.innerText = 'No matches found.';
-    }
-
-    function mockCommit() {
-      const msg = document.getElementById('scm-msg').value;
-      if (!msg) return alert('Enter a commit message!');
-      
-      alert(`Committed ${state.modifiedFiles.size} files: "${msg}"`);
-      state.modifiedFiles.clear();
-      document.getElementById('scm-msg').value = '';
-      renderTabs();
-    }
-
-    function toggleFolder(el) {
-      el.classList.toggle('collapsed');
-      dom.explorer.style.display = el.classList.contains('collapsed') ? 'none' : 'block';
     }
 
     // Start the app
