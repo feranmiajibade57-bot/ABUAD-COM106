@@ -47,6 +47,18 @@
       overflow: hidden;
     }
 
+    /* CUSTOM SCROLLBARS */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(121, 121, 121, 0.4); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(121, 121, 121, 0.7); }
+
+    /* ANIMATIONS */
+    @keyframes viewFadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* 
     ========================================
     PURE CSS INTERACTIVITY STATE (HIDDEN INPUTS)
@@ -85,7 +97,9 @@
     .global-search {
       max-width: 450px; width: 100%; height: 24px; background: var(--bg-hover); border: 1px solid var(--border);
       border-radius: 6px; display: flex; align-items: center; padding: 0 10px; color: var(--fg-sub); cursor: pointer; font-size: 11px;
+      transition: var(--transition);
     }
+    .global-search:focus-within, .global-search:hover { border-color: var(--accent-light); }
     .global-search svg { width: 14px; height: 14px; margin-right: 8px; fill: currentColor; }
 
     /* WORKBENCH */
@@ -104,7 +118,17 @@
       cursor: pointer; color: var(--fg-sub); position: relative; transition: var(--transition);
     }
     .action-label:hover { color: var(--fg-bright); }
-    .action-label svg { width: 24px; height: 24px; fill: currentColor; }
+    .action-label svg { width: 24px; height: 24px; fill: currentColor; transition: transform 0.2s ease; }
+    .action-label:active svg { transform: scale(0.9); }
+    
+    /* TOOLTIPS */
+    .action-label::after {
+      content: attr(title); position: absolute; left: 55px; top: 50%; transform: translateY(-50%);
+      background: var(--bg-hover); color: var(--fg-main); padding: 4px 8px; border-radius: 4px;
+      font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+      z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid var(--border); font-weight: 600;
+    }
+    .action-label:hover::after { opacity: 1; }
     
     .action-label::before {
       content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: transparent;
@@ -124,7 +148,7 @@
     .sidebar-content { flex: 1; overflow-y: auto; scrollbar-width: none; }
     .sidebar-content::-webkit-scrollbar { display: none; }
     
-    .sidebar-section { display: none; }
+    .sidebar-section { display: none; animation: viewFadeIn 0.2s ease-out; }
 
     /* TREE VIEW */
     .tree-item {
@@ -151,7 +175,7 @@
     .tab-icon { width: 16px; height: 16px; margin-right: 8px; fill: currentColor; }
 
     /* VIEWS */
-    .view-content { flex: 1; display: none; overflow: hidden; position: relative; background: var(--bg-dark); }
+    .view-content { flex: 1; display: none; overflow: hidden; position: relative; background: var(--bg-dark); animation: viewFadeIn 0.3s ease-out; }
 
     /* WELCOME SCREEN */
     .welcome-page { padding: 50px 10%; overflow-y: auto; width: 100%; }
@@ -174,7 +198,9 @@
     .code-textarea {
       flex: 1; padding: 20px; font-family: var(--font-code); font-size: 14px; line-height: 1.6;
       color: #d4d4d4; background: transparent; border: none; outline: none; resize: none; white-space: pre; tab-size: 4;
+      transition: background 0.3s ease;
     }
+    .code-textarea:focus { background: rgba(255,255,255,0.01); }
 
     /* STATUS BAR */
     .status-bar {
